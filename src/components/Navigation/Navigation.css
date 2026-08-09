@@ -1,0 +1,109 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(13, 47, 79, 0.96);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+}
+
+.nav__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 800;
+  font-size: var(--fs-lg);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.nav__brand:hover {
+  text-decoration: none;
+}
+
+.nav__brand-globe {
+  font-size: 1.6em;
+  animation: float-soft 5s ease-in-out infinite;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin-left: auto;
+}
+
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--ocean-100);
+  font-weight: 700;
+  padding: 0.5em 0.9em;
+  border-radius: var(--radius-pill);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  min-height: 44px;
+}
+
+.nav__link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+}
+
+.nav__link--active {
+  background: var(--sun-500);
+  color: var(--ocean-950);
+}
+
+.nav__sound {
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  width: 44px;
+  height: 44px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+}
+
+.nav__sound:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* Κινητό: μόνο εικονίδια στα links, μικρότερο brand */
+@media (max-width: 860px) {
+  .nav__brand-text {
+    display: none;
+  }
+
+  .nav__link {
+    padding: 0.5em 0.7em;
+  }
+}
+
+@media (max-width: 560px) {
+  .nav__inner {
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+
+  .nav__link-label {
+    display: none;
+  }
+
+  .nav__link-icon {
+    font-size: 1.3rem;
+  }
+}

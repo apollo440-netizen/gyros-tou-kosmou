@@ -1,0 +1,46 @@
+.mapgame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.mapgame__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mapgame__prompt {
+  text-align: center;
+  font-size: var(--fs-xl);
+}
+
+.mapgame__feedback {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  animation: slide-up var(--transition-med) both;
+}
+
+.mapgame__feedback-text {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+}
+
+.mapgame__feedback-text--ok {
+  color: var(--success-text);
+}
+
+.mapgame__feedback-text--no {
+  color: var(--error-text);
+}
+
+.mapgame__loading {
+  text-align: center;
+  padding: var(--space-7);
+  color: var(--text-600);
+}

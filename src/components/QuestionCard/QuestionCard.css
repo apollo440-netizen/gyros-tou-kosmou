@@ -1,0 +1,124 @@
+.question-card {
+  animation: slide-up var(--transition-med) both;
+}
+
+.question-card__prompt-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.question-card__flag {
+  animation: pop-in var(--transition-med) both;
+}
+
+.question-card__prompt {
+  font-size: var(--fs-xl);
+  text-align: center;
+}
+
+.question-card__choices {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .question-card__choices {
+    grid-template-columns: 1fr;
+  }
+
+  .question-card__choices--flags {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  min-height: 64px;
+  border: 2px solid var(--ocean-100);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text-900);
+  text-align: left;
+  transition: transform var(--transition-fast), border-color var(--transition-fast),
+    background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.choice:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--ocean-500);
+  background: var(--ocean-50);
+  box-shadow: var(--shadow-sm);
+}
+
+.choice:disabled {
+  cursor: default;
+}
+
+.choice--flag {
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.choice__key {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ocean-100);
+  color: var(--ocean-700);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+}
+
+.choice--flag .choice__key {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+}
+
+.choice__label {
+  flex: 1;
+}
+
+.choice__result {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.choice__result--ok {
+  color: var(--success-text);
+}
+
+.choice__result--no {
+  color: var(--error-text);
+}
+
+.choice--correct {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  animation: pop-in 200ms both;
+}
+
+.choice--wrong {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  animation: wiggle 300ms both;
+}
+
+.choice--muted {
+  opacity: 0.55;
+}

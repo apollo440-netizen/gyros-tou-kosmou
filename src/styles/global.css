@@ -1,0 +1,232 @@
+/* ─── Σχεδιαστικά tokens ─────────────────────────────────────────── */
+:root {
+  /* Χρώματα */
+  --ocean-950: #082138;
+  --ocean-900: #0d2f4f;
+  --ocean-700: #1b5288;
+  --ocean-500: #2274a5;
+  --ocean-100: #dceefb;
+  --ocean-50: #eef7ff;
+
+  --sun-500: #ffb703;
+  --sun-600: #f59e0b;
+  --coral-500: #ff6b6b;
+  --coral-600: #e85555;
+  --leaf-500: #2a9d54;
+  --leaf-600: #1f7f42;
+  --grape-500: #7c5cbf;
+  --grape-600: #6847ab;
+
+  --success-bg: #e7f7ec;
+  --success-border: #2a9d54;
+  --success-text: #14622f;
+  --error-bg: #fdebeb;
+  --error-border: #e85555;
+  --error-text: #a02020;
+
+  --surface: #ffffff;
+  --surface-alt: #f4f9fd;
+  --text-900: #14283c;
+  --text-600: #45607a;
+  --text-400: #7d94a8;
+
+  /* Τυπογραφία */
+  --font-main: 'Nunito', 'Trebuchet MS', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fs-xs: 0.8rem;
+  --fs-sm: 0.95rem;
+  --fs-md: 1.1rem;
+  --fs-lg: 1.35rem;
+  --fs-xl: 1.8rem;
+  --fs-2xl: 2.4rem;
+  --fs-3xl: 3.2rem;
+
+  /* Σχήμα */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 2px 6px rgba(13, 47, 79, 0.08);
+  --shadow-md: 0 6px 18px rgba(13, 47, 79, 0.12);
+  --shadow-lg: 0 14px 40px rgba(13, 47, 79, 0.18);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --transition-fast: 140ms ease;
+  --transition-med: 260ms ease;
+}
+
+/* ─── Επαναφορά ──────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  color: var(--text-900);
+  background: linear-gradient(180deg, var(--ocean-50) 0%, #e3f1fb 60%, #d8ecf9 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+a {
+  color: var(--ocean-500);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  color: var(--ocean-900);
+}
+
+/* Ορατή εστίαση για πρόσβαση από πληκτρολόγιο */
+:focus-visible {
+  outline: 3px solid var(--sun-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Διάταξη εφαρμογής ─────────────────────────────────────────── */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-5) var(--space-7);
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    padding: var(--space-4) var(--space-3) var(--space-6);
+  }
+}
+
+/* ─── Κοινές κάρτες / βοηθητικά ─────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+}
+
+.page-title {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.page-subtitle {
+  color: var(--text-600);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ─── Κινήσεις ──────────────────────────────────────────────────── */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

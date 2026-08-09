@@ -1,0 +1,77 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  padding: 0.7em 1.6em;
+  min-height: 48px;
+  color: #fff;
+  background: var(--ocean-500);
+  box-shadow: var(--shadow-sm), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+    filter var(--transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  filter: brightness(1.06);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-sm), inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn--lg {
+  font-size: var(--fs-lg);
+  padding: 0.8em 2em;
+  min-height: 58px;
+}
+
+.btn--secondary {
+  background: var(--surface);
+  color: var(--ocean-700);
+  box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--ocean-100);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ocean-700);
+  box-shadow: none;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: rgba(34, 116, 165, 0.1);
+  box-shadow: none;
+}
+
+.btn--danger {
+  background: var(--coral-600);
+}
+
+.btn--sun {
+  background: var(--sun-500);
+  color: var(--ocean-950);
+}
+
+.btn--leaf {
+  background: var(--leaf-500);
+}
+
+.btn--grape {
+  background: var(--grape-500);
+}
+
+.btn--coral {
+  background: var(--coral-500);
+}
