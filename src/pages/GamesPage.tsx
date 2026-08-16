@@ -31,7 +31,14 @@ const LENGTHS: { value: SessionLength; label: string }[] = [
 const FLAG_VARIANTS: FlagVariant[] = ['mixed', 'flag-to-country', 'country-to-flag'];
 
 function isGameMode(v: string | undefined): v is GameModeId {
-  return v === 'country' || v === 'capital' || v === 'flags' || v === 'map';
+  return (
+    v === 'country' ||
+    v === 'capital' ||
+    v === 'flags' ||
+    v === 'map' ||
+    v === 'landmark' ||
+    v === 'scratch'
+  );
 }
 
 /** Λίστα λειτουργιών ή οθόνη ρυθμίσεων πριν την έναρξη. */
