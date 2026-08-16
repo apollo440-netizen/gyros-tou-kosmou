@@ -3,6 +3,9 @@ import type { Country } from '../../types/country';
 import { getFlagUrl } from '../Flag/flagAssets';
 import './CountryBall.css';
 
+/** Διάθεση/κίνηση του χαρακτήρα */
+export type BallMood = 'idle' | 'happy' | 'dance' | 'sad';
+
 interface CountryBallProps {
   country: Country;
   /** Διάμετρος σε px */
@@ -10,6 +13,8 @@ interface CountryBallProps {
   className?: string;
   /** Καθυστέρηση κίνησης για ποικιλία όταν υπάρχουν πολλές μπάλες */
   animationDelay?: string;
+  /** idle: ήρεμο αιώρημα · happy: χαρούμενα άλματα · dance: χορός · sad: στενοχώρια */
+  mood?: BallMood;
 }
 
 /** Ντετερμινιστική «τυχαιότητα» από το iso2 — ίδια χώρα, ίδιος χαρακτήρας */
@@ -118,6 +123,7 @@ export function CountryBall({
   size = 140,
   className = '',
   animationDelay,
+  mood = 'idle',
 }: CountryBallProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const flagUrl = getFlagUrl(country.iso2);
@@ -125,6 +131,7 @@ export function CountryBall({
   const shadeId = `cb-shade-${uid}`;
   const ch = characterFor(country.iso2);
   const delay = animationDelay ?? `${ch.delay.toFixed(2)}s`;
+  const moodClass = mood !== 'idle' ? `countryball--${mood}` : '';
 
   const ballStyle = {
     width: size,
@@ -137,7 +144,7 @@ export function CountryBall({
   } as CSSProperties;
 
   return (
-    <div className={`countryball ${className}`} style={ballStyle} aria-hidden="true">
+    <div className={`countryball ${moodClass} ${className}`} style={ballStyle} aria-hidden="true">
       <svg
         className="countryball__svg"
         viewBox="0 0 100 108"

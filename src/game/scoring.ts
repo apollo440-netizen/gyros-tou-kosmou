@@ -34,6 +34,14 @@ export function scoreWrongAnswer(): ScoreBreakdown {
   return { base: 0, streakBonus: 0, timeBonus: 0, total: 0 };
 }
 
+/** Η βοήθεια (💡) κοστίζει τους μισούς πόντους της ερώτησης */
+export function applyHintPenalty(b: ScoreBreakdown): ScoreBreakdown {
+  const base = Math.round(b.base / 2);
+  const streakBonus = Math.round(b.streakBonus / 2);
+  const timeBonus = Math.round(b.timeBonus / 2);
+  return { base, streakBonus, timeBonus, total: base + streakBonus + timeBonus };
+}
+
 /** Μορφοποίηση πόντων με ελληνικό διαχωριστικό χιλιάδων: 1.450 */
 export function formatScore(points: number): string {
   return points.toLocaleString('el-GR');

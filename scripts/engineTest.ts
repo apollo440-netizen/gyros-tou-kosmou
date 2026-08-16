@@ -1,5 +1,6 @@
 import { QuestionStream, getCountriesByDifficulty } from '../src/game/questionGenerator';
-import { scoreCorrectAnswer } from '../src/game/scoring';
+import { applyHintPenalty, scoreCorrectAnswer } from '../src/game/scoring';
+import { LANDMARK_BY_ID, LANDMARKS_BY_ISO2 } from '../src/data/landmarks';
 import type { GameConfig } from '../src/types/game';
 
 let fails = 0;
@@ -36,6 +37,33 @@ check(s3.base === 100 && s3.streakBonus === 100 && s3.timeBonus === 25, `capped 
 // focus country
 const fstream = new QuestionStream({ mode: 'country', difficulty: 'easy', length: 10, focusCountryId: 'jp' });
 check(fstream.next().countryId === 'jp', 'focus country should come first');
+
+// landmark mode: κάθε ερώτηση έχει έγκυρο μνημείο της σωστής χώρας
+for (const difficulty of ['easy','medium','hard'] as const) {
+  const lstream = new QuestionStream({ mode: 'landmark', difficulty, length: 10 });
+  for (let i = 0; i < 60; i++) {
+    const q = lstream.next();
+    check(q.type === 'LANDMARK_TO_COUNTRY', `landmark/${difficulty}: wrong type ${q.type}`);
+    check(q.choices.length === 4, `landmark/${difficulty}: ${q.choices.length} choices`);
+    check(q.choices.some(c => c.id === q.correctAnswerId), `landmark/${difficulty}: correct not among choices`);
+    check(!!q.landmarkId && LANDMARK_BY_ID.has(q.landmarkId), `landmark/${difficulty}: missing/unknown landmarkId for ${q.countryId}`);
+    const lm = q.landmarkId ? LANDMARK_BY_ID.get(q.landmarkId) : undefined;
+    check(!!lm && lm.iso2 === q.countryId, `landmark/${difficulty}: landmark ${q.landmarkId} not of ${q.countryId}`);
+    check(LANDMARKS_BY_ISO2.has(q.countryId), `landmark/${difficulty}: country ${q.countryId} has no landmarks`);
+  }
+}
+
+// scratch mode: ερωτήσεις σημαία → χώρα με 4 επιλογές
+const sstream = new QuestionStream({ mode: 'scratch', difficulty: 'easy', length: 10 });
+for (let i = 0; i < 30; i++) {
+  const q = sstream.next();
+  check(q.type === 'FLAG_TO_COUNTRY', `scratch: wrong type ${q.type}`);
+  check(q.choices.length === 4, `scratch: ${q.choices.length} choices`);
+}
+
+// βοήθεια: μισοί πόντοι
+const hp = applyHintPenalty(scoreCorrectAnswer(0, 0));
+check(hp.total === 75, `hint penalty on 150 should be 75, got ${hp.total}`);
 
 console.log(fails === 0 ? 'ENGINE OK' : `${fails} failures`);
 process.exit(fails ? 1 : 0);

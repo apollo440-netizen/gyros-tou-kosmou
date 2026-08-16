@@ -18,6 +18,8 @@ const MODES: { id: GameModeId; icon: string; text: string; accent: string }[] = 
   { id: 'capital', icon: '🏛️', text: 'Βρες τη σωστή πρωτεύουσα', accent: 'sun' },
   { id: 'flags', icon: '🎌', text: 'Πρόκληση αναγνώρισης σημαιών', accent: 'leaf' },
   { id: 'map', icon: '📍', text: 'Δείξε τη χώρα στον παγκόσμιο χάρτη', accent: 'grape' },
+  { id: 'landmark', icon: '🗼', text: 'Μάντεψε τη χώρα από το διάσημο μνημείο', accent: 'ocean' },
+  { id: 'scratch', icon: '🖐️', text: 'Ξύσε το κάλυμμα και μάντεψε τη σημαία', accent: 'coral' },
 ];
 
 const DIFFICULTIES: DifficultyId[] = ['easy', 'medium', 'hard'];

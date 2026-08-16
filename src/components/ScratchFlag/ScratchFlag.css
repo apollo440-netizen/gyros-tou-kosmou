@@ -1,0 +1,35 @@
+.scratchflag {
+  position: relative;
+  width: min(420px, 100%);
+  aspect-ratio: 4 / 3;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  background: var(--surface-alt);
+}
+
+.scratchflag__flag {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.scratchflag__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: pointer;
+  transition: opacity 600ms ease;
+}
+
+.scratchflag__cover--revealed {
+  opacity: 0;
+  pointer-events: none;
+}

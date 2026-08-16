@@ -36,6 +36,7 @@
 .games-card--sun { border-top-color: var(--sun-500); }
 .games-card--leaf { border-top-color: var(--leaf-500); }
 .games-card--grape { border-top-color: var(--grape-500); }
+.games-card--ocean { border-top-color: var(--ocean-500); }
 
 .games-card__icon {
   font-size: 3rem;

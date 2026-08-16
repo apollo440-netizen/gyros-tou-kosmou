@@ -5,16 +5,19 @@ export type QuestionType =
   | 'FLAG_TO_COUNTRY'
   | 'COUNTRY_TO_FLAG'
   | 'COUNTRY_TO_CAPITAL'
-  | 'FIND_ON_MAP';
+  | 'FIND_ON_MAP'
+  | 'LANDMARK_TO_COUNTRY';
 
 /** Λειτουργίες παιχνιδιού όπως εμφανίζονται στο μενού */
-export type GameModeId = 'country' | 'capital' | 'flags' | 'map';
+export type GameModeId = 'country' | 'capital' | 'flags' | 'map' | 'landmark' | 'scratch';
 
 export const GAME_MODE_LABELS: Record<GameModeId, string> = {
   country: 'Βρες τη Χώρα',
   capital: 'Βρες την Πρωτεύουσα',
   flags: 'Σημαίες',
   map: 'Βρες τη Χώρα στον Χάρτη',
+  landmark: 'Μνημεία του Κόσμου',
+  scratch: 'Ξύσε τη Σημαία',
 };
 
 export type DifficultyId = 'easy' | 'medium' | 'hard';
@@ -44,6 +47,8 @@ export interface Question {
   prompt: string;
   choices: AnswerChoice[];
   correctAnswerId: string;
+  /** id μνημείου για ερωτήσεις LANDMARK_TO_COUNTRY */
+  landmarkId?: string;
 }
 
 /** Παραλλαγή για τη λειτουργία «Σημαίες» */

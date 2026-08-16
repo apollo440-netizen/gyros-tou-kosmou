@@ -1,0 +1,108 @@
+.collection__count {
+  text-align: center;
+  font-size: var(--fs-lg);
+  color: var(--text-600);
+}
+
+.collection__count strong {
+  color: var(--ocean-500);
+  font-size: var(--fs-xl);
+}
+
+.collection__bar {
+  width: min(420px, 100%);
+  height: 14px;
+  margin: var(--space-2) auto var(--space-4);
+  background: var(--ocean-100);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.collection__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sun-500), var(--coral-500));
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-med);
+}
+
+.collection__filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: var(--space-5);
+}
+
+.collection__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-3);
+}
+
+.collection__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+  min-height: 140px;
+  justify-content: center;
+}
+
+.collection__item--owned {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+@media (hover: hover) {
+  .collection__item--owned:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+  }
+}
+
+.collection__item--locked {
+  background: var(--surface-alt);
+  opacity: 0.75;
+}
+
+.collection__mystery {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--ocean-100);
+  color: var(--text-400);
+  font-size: 2.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collection__name {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-600);
+}
+
+.collection__item--owned .collection__name {
+  color: var(--ocean-900);
+}
+
+.collection__empty {
+  text-align: center;
+  color: var(--text-600);
+  margin-top: var(--space-5);
+}
+
+/* Με ~200 φιγούρες στη σελίδα, οι συνεχείς κινήσεις κοστίζουν στο κινητό —
+   κρατάμε μόνο το ανοιγόκλεισμα ματιών (φθηνό opacity). */
+.collection__grid .countryball,
+.collection__grid .countryball__body,
+.collection__grid .countryball__ground {
+  animation: none;
+}

@@ -9,6 +9,7 @@ import { QuestionCard } from '../components/QuestionCard/QuestionCard';
 import { ScoreDisplay } from '../components/ScoreDisplay/ScoreDisplay';
 import { GameResults } from '../components/GameResults/GameResults';
 import { Button } from '../components/Button/Button';
+import { CountryBall } from '../components/CountryBall/CountryBall';
 import { getCountryByIsoCode } from '../data/countries';
 import './QuizGamePage.css';
 
@@ -18,7 +19,14 @@ export function parseGameConfig(
   mode: string | undefined,
   params: URLSearchParams,
 ): GameConfig | null {
-  if (mode !== 'country' && mode !== 'capital' && mode !== 'flags' && mode !== 'map') {
+  if (
+    mode !== 'country' &&
+    mode !== 'capital' &&
+    mode !== 'flags' &&
+    mode !== 'map' &&
+    mode !== 'landmark' &&
+    mode !== 'scratch'
+  ) {
     return null;
   }
   const difficultyRaw = params.get('difficulty');
@@ -54,10 +62,13 @@ export function QuizGamePage() {
   );
 
   useEffect(() => {
-    if (!config || config.mode === 'map') navigate('/games', { replace: true });
+    // Ο χάρτης και το «Ξύσε τη Σημαία» έχουν δικές τους σελίδες
+    if (!config || config.mode === 'map' || config.mode === 'scratch') {
+      navigate('/games', { replace: true });
+    }
   }, [config, navigate]);
 
-  if (!config || config.mode === 'map') return null;
+  if (!config || config.mode === 'map' || config.mode === 'scratch') return null;
   return <QuizSession config={config} />;
 }
 
@@ -96,7 +107,9 @@ function QuizSession({ config }: { config: GameConfig }) {
   useKeyboardControls({
     onSelectChoice: (index) => {
       const choice = question.choices[index];
-      if (choice && selectedAnswerId === null) handleAnswer(choice.id);
+      if (choice && selectedAnswerId === null && !session.eliminatedIds.includes(choice.id)) {
+        handleAnswer(choice.id);
+      }
     },
     onAdvance: handleAdvance,
     enabled: !state.finished,
@@ -136,10 +149,20 @@ function QuizSession({ config }: { config: GameConfig }) {
         question={question}
         selectedAnswerId={selectedAnswerId}
         onSelect={handleAnswer}
+        eliminatedIds={session.eliminatedIds}
       />
 
       {selectedAnswerId !== null && (
         <div className="quiz__feedback" role="status" aria-live="assertive">
+          {correctCountry && (
+            <CountryBall
+              country={correctCountry}
+              size={92}
+              mood={
+                answeredCorrectly ? (state.streak >= 3 ? 'dance' : 'happy') : 'sad'
+              }
+            />
+          )}
           {answeredCorrectly ? (
             <p className="quiz__feedback-text quiz__feedback-text--ok">
               ✓ Σωστό!
@@ -157,6 +180,16 @@ function QuizSession({ config }: { config: GameConfig }) {
               </strong>
             </p>
           )}
+          {answeredCorrectly && state.streak >= 3 && (
+            <p className="quiz__streak" aria-live="polite">
+              🔥 Σερί {state.streak}! Ο χαρακτήρας χορεύει για σένα!
+            </p>
+          )}
+          {session.lastCollected && correctCountry && (
+            <p className="quiz__collect" aria-live="polite">
+              🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου: {correctCountry.nameGreek}!
+            </p>
+          )}
           <Button variant="primary" onClick={handleAdvance}>
             Επόμενη Ερώτηση →
           </Button>
@@ -164,7 +197,18 @@ function QuizSession({ config }: { config: GameConfig }) {
         </div>
       )}
       {selectedAnswerId === null && (
-        <p className="quiz__hint">Πλήκτρα 1–4 για γρήγορη απάντηση</p>
+        <div className="quiz__helper">
+          {!session.hintUsed ? (
+            <Button variant="ghost" onClick={session.useHint}>
+              💡 Βοήθεια (μισοί πόντοι)
+            </Button>
+          ) : (
+            <p className="quiz__hint-bubble" role="status">
+              💡 Έκρυψα δύο λάθος απαντήσεις για να σε βοηθήσω!
+            </p>
+          )}
+          <p className="quiz__hint">Πλήκτρα 1–4 για γρήγορη απάντηση</p>
+        </div>
       )}
     </div>
   );

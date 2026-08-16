@@ -67,3 +67,87 @@
     opacity: 0.7;
   }
 }
+
+/* ─── Διαθέσεις ─────────────────────────────────────────────────── */
+
+/* happy: χαρούμενα άλματα με ελαφρύ «στράβωμα» — παίζει για όσο μένει η κλάση */
+.countryball--happy {
+  animation: countryball-jump 0.7s cubic-bezier(0.36, 0, 0.3, 1) infinite;
+}
+
+.countryball--happy .countryball__body {
+  animation: countryball-wiggle-fast 0.7s ease-in-out infinite;
+}
+
+/* dance: ρυθμικό κούνημα δεξιά-αριστερά με αναπηδήσεις */
+.countryball--dance {
+  animation: countryball-dance 0.55s ease-in-out infinite alternate;
+}
+
+.countryball--dance .countryball__body {
+  animation: countryball-tilt 0.55s ease-in-out infinite;
+}
+
+/* sad: πεσμένο, ξεθωριασμένο, μισόκλειστα μάτια */
+.countryball--sad {
+  animation: countryball-sad 2.4s ease-in-out infinite;
+  filter: saturate(0.65) brightness(0.96);
+}
+
+.countryball--sad .countryball__blink {
+  opacity: 0.45;
+  animation: none;
+}
+
+.countryball--sad .countryball__body {
+  animation: none;
+  transform: rotate(-4deg);
+}
+
+@keyframes countryball-jump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  30% {
+    transform: translateY(-16px) scale(0.96, 1.05);
+  }
+  55% {
+    transform: translateY(0) scale(1.05, 0.93);
+  }
+  70% {
+    transform: translateY(-5px) scale(1, 1);
+  }
+}
+
+@keyframes countryball-wiggle-fast {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes countryball-dance {
+  0% {
+    transform: translateX(-7px) translateY(0) rotate(-7deg);
+  }
+  50% {
+    transform: translateX(0) translateY(-9px) rotate(0deg);
+  }
+  100% {
+    transform: translateX(7px) translateY(0) rotate(7deg);
+  }
+}
+
+@keyframes countryball-sad {
+  0%,
+  100% {
+    transform: translateY(3px);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}

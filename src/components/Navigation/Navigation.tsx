@@ -8,6 +8,7 @@ const LINKS = [
   { to: '/games', label: 'Παιχνίδια', icon: '🎮', end: false },
   { to: '/map', label: 'Χάρτης', icon: '🗺️', end: false },
   { to: '/encyclopedia', label: 'Εγκυκλοπαίδεια', icon: '📚', end: false },
+  { to: '/collection', label: 'Συλλογή', icon: '🎁', end: false },
   { to: '/scoreboard', label: 'Βαθμολογία', icon: '🏆', end: false },
 ];
 

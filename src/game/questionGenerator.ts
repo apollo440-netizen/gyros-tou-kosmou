@@ -8,6 +8,7 @@ import type {
 } from '../types/game';
 import { tiersForDifficulty } from '../types/game';
 import { ALL_COUNTRIES } from '../data/countries';
+import { LANDMARKS_BY_ISO2, getRandomLandmarkForCountry } from '../data/landmarks';
 
 let questionCounter = 0;
 
@@ -195,6 +196,23 @@ export function buildQuestion(
         correctAnswerId: country.iso2,
       };
     }
+    case 'LANDMARK_TO_COUNTRY': {
+      const landmark = getRandomLandmarkForCountry(country.iso2);
+      const distractors = generateCountryDistractors(country, 3, difficulty, pool);
+      const choices: AnswerChoice[] = shuffle([
+        { id: country.iso2, label: country.nameGreek },
+        ...distractors.map((c) => ({ id: c.iso2, label: c.nameGreek })),
+      ]);
+      return {
+        id,
+        type,
+        countryId: country.iso2,
+        prompt: 'Σε ποια χώρα βρίσκεται αυτό το μνημείο;',
+        choices,
+        correctAnswerId: country.iso2,
+        landmarkId: landmark?.id,
+      };
+    }
   }
 }
 
@@ -215,6 +233,11 @@ function questionTypesForMode(config: GameConfig): QuestionType[] {
       }
     case 'map':
       return ['FIND_ON_MAP'];
+    case 'landmark':
+      return ['LANDMARK_TO_COUNTRY'];
+    case 'scratch':
+      // Η σελίδα «Ξύσε τη Σημαία» χρειάζεται επιλογές τύπου σημαία → χώρα
+      return ['FLAG_TO_COUNTRY'];
   }
 }
 
@@ -233,6 +256,15 @@ export class QuestionStream {
     let pool = getCountriesByDifficulty(config.difficulty);
     if (restrictToIso2) {
       pool = pool.filter((c) => restrictToIso2.has(c.iso2));
+    }
+    if (config.mode === 'landmark') {
+      // Μόνο χώρες με διαθέσιμο μνημείο· αν το επίπεδο δυσκολίας τις
+      // περιορίζει πολύ, άνοιξε σε όλες τις χώρες με μνημεία.
+      let landmarkPool = pool.filter((c) => LANDMARKS_BY_ISO2.has(c.iso2));
+      if (landmarkPool.length < 4) {
+        landmarkPool = ALL_COUNTRIES.filter((c) => LANDMARKS_BY_ISO2.has(c.iso2));
+      }
+      pool = landmarkPool;
     }
     if (pool.length < 4) {
       pool = restrictToIso2

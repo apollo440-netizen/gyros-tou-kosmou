@@ -1,24 +1,37 @@
 import type { Question } from '../../types/game';
 import { getCountryByIsoCode } from '../../data/countries';
+import { LANDMARK_BY_ID } from '../../data/landmarks';
 import { Flag } from '../Flag/Flag';
+import { LandmarkArt } from '../LandmarkArt/LandmarkArt';
 import './QuestionCard.css';
 
 interface QuestionCardProps {
   question: Question;
   selectedAnswerId: string | null;
   onSelect: (answerId: string) => void;
+  /** Επιλογές κρυμμένες από τη βοήθεια 50:50 */
+  eliminatedIds?: string[];
 }
 
 /**
  * Κάρτα ερώτησης πολλαπλής επιλογής. Μετά την απάντηση δείχνει
  * ✓/✕ και αποκαλύπτει τη σωστή επιλογή (όχι μόνο με χρώμα).
  */
-export function QuestionCard({ question, selectedAnswerId, onSelect }: QuestionCardProps) {
+export function QuestionCard({
+  question,
+  selectedAnswerId,
+  onSelect,
+  eliminatedIds = [],
+}: QuestionCardProps) {
   const answered = selectedAnswerId !== null;
   const country = getCountryByIsoCode(question.countryId);
   const showPromptFlag =
     question.type === 'FLAG_TO_COUNTRY' || question.type === 'COUNTRY_TO_CAPITAL';
   const flagChoices = question.type === 'COUNTRY_TO_FLAG';
+  const landmark =
+    question.type === 'LANDMARK_TO_COUNTRY' && question.landmarkId
+      ? LANDMARK_BY_ID.get(question.landmarkId)
+      : undefined;
 
   return (
     <section className="question-card card" aria-label="Ερώτηση">
@@ -31,6 +44,21 @@ export function QuestionCard({ question, selectedAnswerId, onSelect }: QuestionC
             className="question-card__flag"
           />
         )}
+        {landmark && (
+          <LandmarkArt
+            landmarkId={landmark.id}
+            ariaLabel={answered ? landmark.nameGreek : 'Μυστηριώδες μνημείο'}
+          />
+        )}
+        {landmark && answered && country && (
+          <div className="question-card__reveal" role="status">
+            <Flag iso2={country.iso2} countryName={country.nameGreek} size="lg" />
+            <p className="question-card__reveal-text">
+              <strong>{landmark.nameGreek}</strong>
+              {landmark.placeGreek ? ` · ${landmark.placeGreek}` : ''}
+            </p>
+          </div>
+        )}
         <h2 className="question-card__prompt">{question.prompt}</h2>
       </div>
 
@@ -42,17 +70,19 @@ export function QuestionCard({ question, selectedAnswerId, onSelect }: QuestionC
         {question.choices.map((choice, index) => {
           const isCorrect = choice.id === question.correctAnswerId;
           const isSelected = choice.id === selectedAnswerId;
+          const isEliminated = !answered && eliminatedIds.includes(choice.id);
           let stateClass = '';
           if (answered && isCorrect) stateClass = 'choice--correct';
           else if (answered && isSelected) stateClass = 'choice--wrong';
           else if (answered) stateClass = 'choice--muted';
+          else if (isEliminated) stateClass = 'choice--muted';
 
           return (
             <button
               key={choice.id}
               type="button"
               className={`choice ${flagChoices ? 'choice--flag' : ''} ${stateClass}`}
-              disabled={answered}
+              disabled={answered || isEliminated}
               onClick={() => onSelect(choice.id)}
               aria-label={
                 flagChoices

@@ -35,6 +35,27 @@ const MODE_CARDS = [
     accent: 'grape',
   },
   {
+    to: '/games/landmark',
+    icon: '🗼',
+    title: 'Μνημεία του Κόσμου',
+    text: 'Μάντεψε τη χώρα από το μνημείο',
+    accent: 'ocean',
+  },
+  {
+    to: '/games/scratch',
+    icon: '🖐️',
+    title: 'Ξύσε τη Σημαία',
+    text: 'Ξύσε το κάλυμμα και μάντεψε τη χώρα',
+    accent: 'coral',
+  },
+  {
+    to: '/collection',
+    icon: '🎁',
+    title: 'Η Συλλογή μου',
+    text: 'Μάζεψε όλες τις φιγούρες των χωρών',
+    accent: 'sun',
+  },
+  {
     to: '/map',
     icon: '🗺️',
     title: 'Παγκόσμιος Χάρτης',

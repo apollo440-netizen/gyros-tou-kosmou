@@ -1,7 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { GameConfig, Question, SessionState } from '../types/game';
 import { QuestionStream } from '../game/questionGenerator';
-import { scoreCorrectAnswer, scoreWrongAnswer, type ScoreBreakdown } from '../game/scoring';
+import {
+  applyHintPenalty,
+  scoreCorrectAnswer,
+  scoreWrongAnswer,
+  type ScoreBreakdown,
+} from '../game/scoring';
+import { addToCollection } from '../utils/collection';
 
 export interface GameSession {
   state: SessionState;
@@ -10,6 +16,13 @@ export interface GameSession {
   selectedAnswerId: string | null;
   lastBreakdown: ScoreBreakdown | null;
   totalQuestions: number | null;
+  /** Ζητήθηκε βοήθεια στην τρέχουσα ερώτηση (μισοί πόντοι) */
+  hintUsed: boolean;
+  /** Επιλογές που «έκρυψε» η βοήθεια (50:50) */
+  eliminatedIds: string[];
+  useHint: () => void;
+  /** iso2 φιγούρας που μόλις ξεκλειδώθηκε με τη σωστή απάντηση, αλλιώς null */
+  lastCollected: string | null;
   answer: (answerId: string) => boolean;
   nextQuestion: () => void;
   restart: () => void;
@@ -41,6 +54,9 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
   const [question, setQuestion] = useState<Question>(() => streamRef.current!.next());
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
   const [lastBreakdown, setLastBreakdown] = useState<ScoreBreakdown | null>(null);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [eliminatedIds, setEliminatedIds] = useState<string[]>([]);
+  const [lastCollected, setLastCollected] = useState<string | null>(null);
   const questionStartRef = useRef<number>(performance.now());
 
   const totalQuestions = useMemo(
@@ -53,11 +69,13 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
       if (selectedAnswerId !== null) return false;
       const timeMs = performance.now() - questionStartRef.current;
       const correct = answerId === question.correctAnswerId;
-      const breakdown = correct
+      let breakdown = correct
         ? scoreCorrectAnswer(state.streak, timeMs)
         : scoreWrongAnswer();
+      if (correct && hintUsed) breakdown = applyHintPenalty(breakdown);
       setSelectedAnswerId(answerId);
       setLastBreakdown(breakdown);
+      setLastCollected(correct && addToCollection(question.countryId) ? question.countryId : null);
       setState((prev) => {
         const streak = correct ? prev.streak + 1 : 0;
         return {
@@ -79,8 +97,22 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
       });
       return correct;
     },
-    [question, selectedAnswerId, state.streak],
+    [question, selectedAnswerId, state.streak, hintUsed],
   );
+
+  const useHintCb = useCallback(() => {
+    if (selectedAnswerId !== null || hintUsed) return;
+    setHintUsed(true);
+    // 50:50 — κρύψε δύο τυχαίες λάθος επιλογές (αν υπάρχουν επιλογές)
+    const wrong = question.choices
+      .filter((c) => c.id !== question.correctAnswerId)
+      .map((c) => c.id);
+    for (let i = wrong.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [wrong[i], wrong[j]] = [wrong[j], wrong[i]];
+    }
+    setEliminatedIds(wrong.slice(0, Math.min(2, Math.max(0, wrong.length - 1))));
+  }, [selectedAnswerId, hintUsed, question]);
 
   const nextQuestion = useCallback(() => {
     if (selectedAnswerId === null) return;
@@ -95,6 +127,9 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
       setQuestion(streamRef.current!.next());
       setSelectedAnswerId(null);
       setLastBreakdown(null);
+      setHintUsed(false);
+      setEliminatedIds([]);
+      setLastCollected(null);
       questionStartRef.current = performance.now();
     }
   }, [selectedAnswerId, state.questionIndex, totalQuestions]);
@@ -105,6 +140,9 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
     setQuestion(streamRef.current.next());
     setSelectedAnswerId(null);
     setLastBreakdown(null);
+    setHintUsed(false);
+    setEliminatedIds([]);
+    setLastCollected(null);
     questionStartRef.current = performance.now();
   }, [config, restrictToIso2]);
 
@@ -114,6 +152,10 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
     selectedAnswerId,
     lastBreakdown,
     totalQuestions,
+    hintUsed,
+    eliminatedIds,
+    useHint: useHintCb,
+    lastCollected,
     answer,
     nextQuestion,
     restart,

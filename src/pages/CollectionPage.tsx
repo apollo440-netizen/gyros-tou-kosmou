@@ -1,0 +1,102 @@
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ALL_COUNTRIES } from '../data/countries';
+import { CONTINENT_LABELS, type ContinentId } from '../types/country';
+import { loadCollection } from '../utils/collection';
+import { CountryBall } from '../components/CountryBall/CountryBall';
+import './CollectionPage.css';
+
+type Filter = 'all' | ContinentId;
+
+/**
+ * Συλλογή φιγούρων: κάθε σωστή απάντηση για μια χώρα (σε οποιοδήποτε
+ * παιχνίδι) ξεκλειδώνει τον χαρακτήρα της. Οι κλειδωμένες θέσεις
+ * εμφανίζονται ως σκιές με «;».
+ */
+export function CollectionPage() {
+  const collection = useMemo(() => loadCollection(), []);
+  const [filter, setFilter] = useState<Filter>('all');
+
+  const continents = useMemo(() => {
+    const ids = new Set<ContinentId>();
+    for (const c of ALL_COUNTRIES) ids.add(c.continent);
+    return [...ids];
+  }, []);
+
+  const countries = useMemo(() => {
+    const list =
+      filter === 'all' ? ALL_COUNTRIES : ALL_COUNTRIES.filter((c) => c.continent === filter);
+    return [...list].sort((a, b) => a.nameGreek.localeCompare(b.nameGreek, 'el'));
+  }, [filter]);
+
+  const collectedCount = ALL_COUNTRIES.filter((c) => collection.has(c.iso2)).length;
+
+  return (
+    <div className="collection">
+      <h1 className="page-title">Η Συλλογή μου</h1>
+      <p className="page-subtitle">
+        Κάθε σωστή απάντηση ξεκλειδώνει τον χαρακτήρα της χώρας!
+      </p>
+
+      <p className="collection__count" role="status">
+        <strong>{collectedCount}</strong> / {ALL_COUNTRIES.length} φιγούρες
+      </p>
+      <div className="collection__bar" aria-hidden="true">
+        <div
+          className="collection__bar-fill"
+          style={{ width: `${(collectedCount / ALL_COUNTRIES.length) * 100}%` }}
+        />
+      </div>
+
+      <div className="collection__filters">
+        <button
+          type="button"
+          className={`setup-chip ${filter === 'all' ? 'setup-chip--active' : ''}`}
+          aria-pressed={filter === 'all'}
+          onClick={() => setFilter('all')}
+        >
+          Όλες
+        </button>
+        {continents.map((id) => (
+          <button
+            key={id}
+            type="button"
+            className={`setup-chip ${filter === id ? 'setup-chip--active' : ''}`}
+            aria-pressed={filter === id}
+            onClick={() => setFilter(id)}
+          >
+            {CONTINENT_LABELS[id]}
+          </button>
+        ))}
+      </div>
+
+      <div className="collection__grid">
+        {countries.map((c) => {
+          const owned = collection.has(c.iso2);
+          return owned ? (
+            <Link
+              key={c.iso2}
+              to={`/country/${c.iso2}`}
+              className="collection__item collection__item--owned"
+            >
+              <CountryBall country={c} size={84} />
+              <span className="collection__name">{c.nameGreek}</span>
+            </Link>
+          ) : (
+            <div key={c.iso2} className="collection__item collection__item--locked" aria-label="Κλειδωμένη φιγούρα">
+              <span className="collection__mystery" aria-hidden="true">?</span>
+              <span className="collection__name">Άγνωστη</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {collectedCount === 0 && (
+        <p className="collection__empty">
+          Δεν έχεις φιγούρες ακόμη — <Link to="/games">παίξε ένα παιχνίδι</Link> και
+          απάντησε σωστά για να κερδίσεις την πρώτη σου!
+        </p>
+      )}
+    </div>
+  );
+}

@@ -19,6 +19,24 @@
   text-align: center;
 }
 
+.question-card__reveal {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: pop-in var(--transition-med) both;
+}
+
+.question-card__reveal-text {
+  font-size: var(--fs-md);
+  color: var(--text-600);
+}
+
+.question-card__reveal-text strong {
+  color: var(--ocean-900);
+}
+
 .question-card__choices {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

@@ -5,9 +5,11 @@ import { Navigation } from './components/Navigation/Navigation';
 import { HomePage } from './pages/HomePage';
 import { GamesPage } from './pages/GamesPage';
 import { QuizGamePage } from './pages/QuizGamePage';
+import { ScratchGamePage } from './pages/ScratchGamePage';
 import { EncyclopediaPage } from './pages/EncyclopediaPage';
 import { CountryPage } from './pages/CountryPage';
 import { ScoreboardPage } from './pages/ScoreboardPage';
+import { CollectionPage } from './pages/CollectionPage';
 
 // Οι σελίδες χάρτη φορτώνονται «τεμπέλικα» (φέρνουν το TopoJSON ~750KB)
 const WorldMapPage = lazy(() =>
@@ -38,11 +40,13 @@ export default function App() {
                 <Route path="/games" element={<GamesPage />} />
                 <Route path="/games/:mode" element={<GamesPage />} />
                 <Route path="/play/map" element={<MapGamePage />} />
+                <Route path="/play/scratch" element={<ScratchGamePage />} />
                 <Route path="/play/:mode" element={<QuizGamePage />} />
                 <Route path="/map" element={<WorldMapPage />} />
                 <Route path="/encyclopedia" element={<EncyclopediaPage />} />
                 <Route path="/country/:iso2" element={<CountryPage />} />
                 <Route path="/scoreboard" element={<ScoreboardPage />} />
+                <Route path="/collection" element={<CollectionPage />} />
                 <Route path="*" element={<HomePage />} />
               </Routes>
             </Suspense>
