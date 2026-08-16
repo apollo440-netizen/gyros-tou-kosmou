@@ -1,0 +1,86 @@
+.mapclouds {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.mapclouds__cloud {
+  animation: mapcloud-drift 80s linear infinite;
+}
+
+@keyframes mapcloud-drift {
+  from {
+    transform: translateX(-140px);
+  }
+  to {
+    transform: translateX(1140px);
+  }
+}
+
+.mapevent {
+  cursor: pointer;
+}
+
+.mapevent__inner {
+  animation: mapevent-appear 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mapevent__pulse {
+  fill: rgba(255, 183, 3, 0.35);
+  stroke: rgba(255, 183, 3, 0.9);
+  stroke-width: 2;
+  animation: mapevent-pulse 1.6s ease-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.mapevent__bob {
+  animation: mapevent-bob 2.2s ease-in-out infinite;
+}
+
+.mapevent__emoji {
+  user-select: none;
+  -webkit-user-select: none;
+  paint-order: stroke;
+}
+
+@keyframes mapevent-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mapevent-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes mapevent-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapevent__pulse,
+  .mapevent__bob,
+  .mapclouds__cloud {
+    animation: none;
+  }
+}

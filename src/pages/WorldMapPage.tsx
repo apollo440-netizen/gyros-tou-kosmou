@@ -1,12 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getCountryByIsoCode } from '../data/countries';
+import { ALL_COUNTRIES, getCountryByIsoCode } from '../data/countries';
 import { CONTINENT_LABELS } from '../types/country';
+import type { Question } from '../types/game';
+import { buildQuestion } from '../game/questionGenerator';
+import { MAP_EVENTS, type MapEvent } from '../data/mapEvents';
+import { addToCollection } from '../utils/collection';
+import { playSound } from '../audio/soundManager';
 import { WorldMap, type WorldMapHandle } from '../components/WorldMap/WorldMap';
+import { AmbientClouds, MapEventsLayer } from '../components/MapEvents/MapEventsLayer';
+import { QuestionCard } from '../components/QuestionCard/QuestionCard';
 import { Flag } from '../components/Flag/Flag';
 import { CountryBall } from '../components/CountryBall/CountryBall';
 import { Button } from '../components/Button/Button';
 import './WorldMapPage.css';
+
+const MAX_ACTIVE_EVENTS = 3;
+const EVENT_LIFETIME_MS = 16_000;
+const SPAWN_EVERY_MS = 7_000;
+const FIRST_SPAWN_MS = 2_500;
+
+interface ActiveChallenge {
+  event: MapEvent;
+  question: Question;
+}
 
 /** Εξερεύνηση παγκόσμιου χάρτη με πλαϊνό πάνελ πληροφοριών. */
 export function WorldMapPage() {
@@ -15,6 +32,62 @@ export function WorldMapPage() {
   const [selectedIso2, setSelectedIso2] = useState<string | null>(focusIso2);
   const mapRef = useRef<WorldMapHandle>(null);
   const selected = selectedIso2 ? getCountryByIsoCode(selectedIso2) : undefined;
+
+  // ─── Ζωντανά γεγονότα ─────────────────────────────────────────
+  const [events, setEvents] = useState<MapEvent[]>([]);
+  const [challenge, setChallenge] = useState<ActiveChallenge | null>(null);
+  const [challengeAnswer, setChallengeAnswer] = useState<string | null>(null);
+  const [collected, setCollected] = useState(false);
+
+  useEffect(() => {
+    const spawn = () => {
+      setEvents((prev) => {
+        if (prev.length >= MAX_ACTIVE_EVENTS) return prev;
+        const candidates = MAP_EVENTS.filter((e) => !prev.some((p) => p.id === e.id));
+        if (candidates.length === 0) return prev;
+        const ev = candidates[Math.floor(Math.random() * candidates.length)];
+        window.setTimeout(
+          () => setEvents((cur) => cur.filter((c) => c.id !== ev.id)),
+          EVENT_LIFETIME_MS,
+        );
+        return [...prev, ev];
+      });
+    };
+    const first = window.setTimeout(spawn, FIRST_SPAWN_MS);
+    const iv = window.setInterval(spawn, SPAWN_EVERY_MS);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(iv);
+    };
+  }, []);
+
+  const handleEventTap = useCallback((ev: MapEvent) => {
+    playSound('click');
+    setEvents((prev) => prev.filter((p) => p.id !== ev.id));
+    const country = getCountryByIsoCode(ev.iso2);
+    if (!country) return;
+    const type = Math.random() < 0.5 ? 'COUNTRY_TO_CAPITAL' : 'FLAG_TO_COUNTRY';
+    setChallenge({ event: ev, question: buildQuestion(type, country, 'easy', ALL_COUNTRIES) });
+    setChallengeAnswer(null);
+    setCollected(false);
+  }, []);
+
+  const handleChallengeAnswer = useCallback(
+    (answerId: string) => {
+      if (!challenge || challengeAnswer !== null) return;
+      const correct = answerId === challenge.question.correctAnswerId;
+      playSound(correct ? 'correct' : 'wrong');
+      if (correct) setCollected(addToCollection(challenge.event.iso2));
+      setChallengeAnswer(answerId);
+    },
+    [challenge, challengeAnswer],
+  );
+
+  const closeChallenge = useCallback(() => {
+    setChallenge(null);
+    setChallengeAnswer(null);
+    setCollected(false);
+  }, []);
 
   useEffect(() => {
     if (focusIso2) {
@@ -29,7 +102,8 @@ export function WorldMapPage() {
     <div className="mappage">
       <h1 className="page-title">🗺️ Παγκόσμιος Χάρτης</h1>
       <p className="page-subtitle">
-        Πέρασε το ποντίκι πάνω από μια χώρα και κάνε κλικ για πληροφορίες
+        Πάτησε μια χώρα για πληροφορίες — και έχε τον νου σου: κάθε λίγο
+        εμφανίζονται εκπλήξεις πάνω στον χάρτη! 🎈
       </p>
 
       <div className="mappage__layout">
@@ -41,6 +115,12 @@ export function WorldMapPage() {
               setSelectedIso2(iso2);
               if (searchParams.get('focus')) setSearchParams({}, { replace: true });
             }}
+            overlay={
+              <>
+                <AmbientClouds />
+                <MapEventsLayer events={events} onTap={handleEventTap} />
+              </>
+            }
           />
         </div>
 
@@ -82,6 +162,57 @@ export function WorldMapPage() {
           )}
         </aside>
       </div>
+
+      {challenge && (
+        <div className="mapevent-modal" role="dialog" aria-modal="true" aria-label="Μίνι πρόκληση">
+          <div className="mapevent-modal__content">
+            <div className="mapevent-modal__intro card">
+              <span className="mapevent-modal__emoji" aria-hidden="true">
+                {challenge.event.emoji}
+              </span>
+              <p>{challenge.event.textGreek}</p>
+            </div>
+
+            <QuestionCard
+              question={challenge.question}
+              selectedAnswerId={challengeAnswer}
+              onSelect={handleChallengeAnswer}
+            />
+
+            {challengeAnswer !== null && (
+              <div className="mapevent-modal__feedback" role="status" aria-live="assertive">
+                {(() => {
+                  const country = getCountryByIsoCode(challenge.event.iso2);
+                  const correct = challengeAnswer === challenge.question.correctAnswerId;
+                  return (
+                    <>
+                      {country && (
+                        <CountryBall country={country} size={88} mood={correct ? 'happy' : 'sad'} />
+                      )}
+                      {correct ? (
+                        <p className="mapevent-modal__ok">✓ Μπράβο σου!</p>
+                      ) : (
+                        <p className="mapevent-modal__no">Δεν πειράζει — την επόμενη φορά!</p>
+                      )}
+                      {collected && country && (
+                        <p className="quiz__collect">
+                          🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου: {country.nameGreek}!
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+
+            <div className="mapevent-modal__actions">
+              <Button variant={challengeAnswer !== null ? 'primary' : 'ghost'} onClick={closeChallenge}>
+                {challengeAnswer !== null ? 'Πίσω στον χάρτη →' : '✕ Κλείσιμο'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

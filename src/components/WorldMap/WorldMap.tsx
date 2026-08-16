@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ReactNode,
 } from 'react';
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { select } from 'd3-selection';
@@ -19,6 +20,21 @@ const VIEW_W = 1000;
 const VIEW_H = 500;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 10;
+
+let cachedProjection: ReturnType<typeof geoNaturalEarth1> | null = null;
+
+/**
+ * Προβολή γεωγραφικών συντεταγμένων (lon, lat) στις συντεταγμένες του
+ * χάρτη — ίδια προβολή με τις χώρες, ώστε overlay στοιχεία (γεγονότα)
+ * να «κάθονται» σωστά και να ακολουθούν το ζουμ.
+ */
+export function projectToMap(lon: number, lat: number): [number, number] | null {
+  if (!cachedProjection) {
+    cachedProjection = geoNaturalEarth1().fitSize([VIEW_W, VIEW_H], { type: 'Sphere' });
+  }
+  const p = cachedProjection([lon, lat]);
+  return p ? [p[0], p[1]] : null;
+}
 
 export interface WorldMapHandle {
   /** Ζουμ στη χώρα με το συγκεκριμένο iso2 */
@@ -35,6 +51,8 @@ interface WorldMapProps {
   /** Απενεργοποίηση κλικ (π.χ. μετά την απάντηση) */
   interactionDisabled?: boolean;
   ariaLabel?: string;
+  /** SVG στοιχεία που ζωγραφίζονται ΜΕΣΑ στην ομάδα ζουμ (π.χ. γεγονότα) */
+  overlay?: ReactNode;
 }
 
 interface TooltipState {
@@ -56,6 +74,7 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
     wrongIso2 = null,
     interactionDisabled = false,
     ariaLabel = 'Παγκόσμιος χάρτης',
+    overlay,
   },
   ref,
 ) {
@@ -221,6 +240,7 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
               />
             );
           })}
+          {overlay}
         </g>
       </svg>
       {tooltip && (

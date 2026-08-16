@@ -64,3 +64,72 @@
   display: block;
   margin-bottom: var(--space-2);
 }
+
+/* ─── Μίνι πρόκληση γεγονότος ──────────────────────────────────── */
+.mapevent-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(8, 33, 56, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: pop-in var(--transition-fast) both;
+}
+
+.mapevent-modal__content {
+  width: min(560px, 100%);
+  max-height: min(88vh, 88dvh);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-radius: var(--radius-lg);
+}
+
+.mapevent-modal__intro {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  font-weight: 800;
+  color: var(--ocean-900);
+}
+
+.mapevent-modal__emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+  animation: wiggle 900ms ease-in-out infinite;
+}
+
+.mapevent-modal__feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  animation: slide-up var(--transition-med) both;
+}
+
+.mapevent-modal__ok {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: #bff0cd;
+}
+
+.mapevent-modal__no {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: #ffd9d9;
+}
+
+.mapevent-modal__actions {
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--space-2);
+}
+
+.mapevent-modal__actions .btn--ghost {
+  color: #dceefb;
+}
