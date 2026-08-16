@@ -29,6 +29,7 @@
   justify-content: center;
   gap: var(--space-5);
   margin-bottom: var(--space-5);
+  flex-wrap: wrap;
 }
 
 .game-results__stat-value {

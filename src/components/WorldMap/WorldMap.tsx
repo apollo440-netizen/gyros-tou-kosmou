@@ -141,6 +141,13 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
     select(svgEl).transition().duration(500).call(behavior.transform, zoomIdentity);
   }, []);
 
+  const zoomBy = useCallback((factor: number) => {
+    const svgEl = svgRef.current;
+    const behavior = zoomRef.current;
+    if (!svgEl || !behavior) return;
+    select(svgEl).transition().duration(250).call(behavior.scaleBy, factor);
+  }, []);
+
   useImperativeHandle(ref, () => ({ zoomToCountry, resetZoom }), [zoomToCountry, resetZoom]);
 
   const handleMove = useCallback((e: React.PointerEvent, c: CountryFeature) => {
@@ -226,6 +233,22 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
         </div>
       )}
       <div className="worldmap__zoom-controls">
+        <button
+          type="button"
+          className="worldmap__zoom-btn"
+          aria-label="Μεγέθυνση"
+          onClick={() => zoomBy(1.6)}
+        >
+          +
+        </button>
+        <button
+          type="button"
+          className="worldmap__zoom-btn"
+          aria-label="Σμίκρυνση"
+          onClick={() => zoomBy(1 / 1.6)}
+        >
+          −
+        </button>
         <button
           type="button"
           className="worldmap__zoom-btn"

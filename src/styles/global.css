@@ -82,7 +82,15 @@ body {
   color: var(--text-900);
   background: linear-gradient(180deg, var(--ocean-50) 0%, #e3f1fb 60%, #d8ecf9 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 img,
@@ -128,6 +136,7 @@ h3 {
 /* ─── Διάταξη εφαρμογής ─────────────────────────────────────────── */
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -142,7 +151,48 @@ h3 {
 
 @media (max-width: 768px) {
   .app-main {
-    padding: var(--space-4) var(--space-3) var(--space-6);
+    padding: var(--space-4) var(--space-3)
+      calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+    padding-left: calc(var(--space-3) + env(safe-area-inset-left, 0px));
+    padding-right: calc(var(--space-3) + env(safe-area-inset-right, 0px));
+  }
+}
+
+/* ─── Συσκευές αφής: ακύρωση «κολλημένων» hover εφέ του iOS ─────── */
+@media (hover: none) {
+  .home-card:hover,
+  .games-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+  }
+
+  .choice:hover:not(:disabled) {
+    transform: none;
+    border-color: var(--ocean-100);
+    background: var(--surface-alt);
+    box-shadow: none;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: none;
+    filter: none;
+    box-shadow: var(--shadow-sm), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  }
+
+  .setup-chip:hover {
+    border-color: var(--ocean-100);
+  }
+
+  .setup-chip--active:hover {
+    border-color: var(--ocean-500);
+  }
+
+  .worldmap__country--known:hover {
+    fill: #8fce9f;
+  }
+
+  .worldmap__country--selected:hover {
+    fill: var(--ocean-500);
   }
 }
 
