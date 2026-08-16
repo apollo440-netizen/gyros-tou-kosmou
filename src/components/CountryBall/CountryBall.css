@@ -1,6 +1,6 @@
 .countryball {
   display: inline-block;
-  animation: countryball-float 4.5s ease-in-out infinite;
+  animation: countryball-float var(--cb-float-dur, 4.5s) ease-in-out infinite;
   will-change: transform;
 }
 
@@ -10,17 +10,17 @@
 
 .countryball__body {
   transform-origin: 50px 52px;
-  animation: countryball-tilt 6s ease-in-out infinite;
+  animation: countryball-tilt var(--cb-tilt-dur, 6s) ease-in-out infinite;
 }
 
 .countryball__blink {
   opacity: 0;
-  animation: countryball-blink 4s infinite;
+  animation: countryball-blink var(--cb-blink-dur, 4s) infinite;
 }
 
 .countryball__ground {
   transform-origin: 50px 103px;
-  animation: countryball-shadow 4.5s ease-in-out infinite;
+  animation: countryball-shadow var(--cb-float-dur, 4.5s) ease-in-out infinite;
 }
 
 @keyframes countryball-float {
@@ -36,10 +36,10 @@
 @keyframes countryball-tilt {
   0%,
   100% {
-    transform: rotate(-2.5deg);
+    transform: rotate(calc(-1 * var(--cb-tilt-deg, 2.5deg)));
   }
   50% {
-    transform: rotate(2.5deg);
+    transform: rotate(var(--cb-tilt-deg, 2.5deg));
   }
 }
 

@@ -78,15 +78,6 @@ export function CountryPage() {
         <Button variant="primary" size="lg" onClick={() => navigate(`/map?focus=${country.iso2}`)}>
           Βρες {country.nameGreekAccusative} στον χάρτη
         </Button>
-        <Button
-          variant="sun"
-          size="lg"
-          onClick={() =>
-            navigate(`/play/country?difficulty=hard&length=10&focus=${country.iso2}`)
-          }
-        >
-          Παίξε ερωτήσεις για {country.nameGreekAccusative}
-        </Button>
       </div>
     </div>
   );
