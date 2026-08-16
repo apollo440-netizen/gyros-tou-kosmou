@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { getFlagUrl } from '../Flag/flagAssets';
+import { playScratchSound } from '../../audio/soundManager';
 import './ScratchFlag.css';
 
 export type CoverKind = 'clouds' | 'ice' | 'sand' | 'leaves' | 'paint';
@@ -144,6 +145,7 @@ export function ScratchFlag({ iso2, cover, onRevealChange, revealAll = false }: 
   const wrapRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<boolean[]>(new Array(GRID_COLS * GRID_ROWS).fill(false));
   const scratchingRef = useRef(false);
+  const lastSoundRef = useRef(0);
   const flagUrl = getFlagUrl(iso2);
 
   // Σχεδίαση καλύμματος στο μέγεθος του στοιχείου
@@ -174,6 +176,15 @@ export function ScratchFlag({ iso2, cover, onRevealChange, revealAll = false }: 
       const yFrac = (clientY - rect.top) / rect.height;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
+
+      // Ήχος υλικού — αραιωμένος ώστε η γρήγορη κίνηση να μη γεννά
+      // εκατοντάδες κόμβους ήχου· οι κόκκοι αλληλοκαλύπτονται αρμονικά
+      const now = performance.now();
+      if (now - lastSoundRef.current > 65) {
+        lastSoundRef.current = now;
+        playScratchSound(cover);
+      }
+
       const r = canvas.width * ERASER_RADIUS_FRAC;
       ctx.globalCompositeOperation = 'destination-out';
       ctx.beginPath();
@@ -197,7 +208,7 @@ export function ScratchFlag({ iso2, cover, onRevealChange, revealAll = false }: 
       const cleared = grid.reduce((acc, v) => acc + (v ? 1 : 0), 0);
       onRevealChange?.(cleared / grid.length);
     },
-    [onRevealChange],
+    [onRevealChange, cover],
   );
 
   const handlePointerDown = useCallback(

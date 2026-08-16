@@ -50,6 +50,86 @@ function tone(
   osc.stop(startAt + duration + 0.05);
 }
 
+/** Επιφάνειες της λειτουργίας «Ξύσε τη Σημαία» — κάθε μία με δικό της ήχο */
+export type ScratchSurface = 'clouds' | 'ice' | 'sand' | 'leaves' | 'paint';
+
+let noiseBuffer: AudioBuffer | null = null;
+
+/** Κοινό buffer λευκού θορύβου — βάση για όλους τους ήχους ξυσίματος */
+function getNoiseBuffer(audio: AudioContext): AudioBuffer {
+  if (!noiseBuffer || noiseBuffer.sampleRate !== audio.sampleRate) {
+    const len = Math.floor(audio.sampleRate * 0.5);
+    noiseBuffer = audio.createBuffer(1, len, audio.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  }
+  return noiseBuffer;
+}
+
+/**
+ * Κόκκος ήχου ξυσίματος: φιλτραρισμένος θόρυβος με χροιά ανά υλικό.
+ * Καλείται συχνά όσο κινείται το δάχτυλο — οι κόκκοι αλληλοκαλύπτονται
+ * και ακούγονται ως συνεχές «σσσς»/τρίξιμο.
+ */
+export function playScratchSound(surface: ScratchSurface): void {
+  if (!enabled) return;
+  const audio = getContext();
+  if (!audio) return;
+  const now = audio.currentTime;
+  const src = audio.createBufferSource();
+  src.buffer = getNoiseBuffer(audio);
+  const filter = audio.createBiquadFilter();
+  const gain = audio.createGain();
+  let dur = 0.09;
+  let vol = 0.07;
+  switch (surface) {
+    case 'sand': // βραχνό «σσσς» άμμου
+      filter.type = 'bandpass';
+      filter.frequency.value = 900;
+      filter.Q.value = 0.9;
+      src.playbackRate.value = 0.9 + Math.random() * 0.3;
+      break;
+    case 'ice': // λεπτό γυάλινο ξύσιμο
+      filter.type = 'highpass';
+      filter.frequency.value = 2800;
+      vol = 0.05;
+      dur = 0.06;
+      src.playbackRate.value = 1.2 + Math.random() * 0.5;
+      break;
+    case 'clouds': // απαλό φύσημα
+      filter.type = 'lowpass';
+      filter.frequency.value = 450;
+      vol = 0.05;
+      dur = 0.13;
+      src.playbackRate.value = 0.5 + Math.random() * 0.2;
+      break;
+    case 'leaves': // θρόισμα φύλλων
+      filter.type = 'bandpass';
+      filter.frequency.value = 2200;
+      filter.Q.value = 1.2;
+      dur = 0.07;
+      src.playbackRate.value = 1 + Math.random() * 0.6;
+      break;
+    case 'paint': // υγρό «σβήσιμο» μπογιάς
+      filter.type = 'bandpass';
+      filter.frequency.value = 600;
+      filter.Q.value = 2;
+      vol = 0.06;
+      src.playbackRate.value = 0.55 + Math.random() * 0.15;
+      break;
+  }
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(vol, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  src.connect(filter).connect(gain).connect(audio.destination);
+  src.start(now, Math.random() * 0.3, dur + 0.05);
+
+  // Ο πάγος σπάει πού και πού με ένα «κρακ»
+  if (surface === 'ice' && Math.random() < 0.12) {
+    tone(audio, 900 + Math.random() * 700, now, 0.05, 'triangle', 0.06);
+  }
+}
+
 export function playSound(name: SoundName): void {
   if (!enabled) return;
   const audio = getContext();
