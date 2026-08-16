@@ -3,7 +3,7 @@
  * κανένα autoplay: ο ήχος παράγεται μόνο ως απόκριση σε ενέργεια του χρήστη.
  */
 
-export type SoundName = 'correct' | 'wrong' | 'click' | 'highscore';
+export type SoundName = 'correct' | 'wrong' | 'click' | 'highscore' | 'spawn' | 'magic';
 
 let ctx: AudioContext | null = null;
 let enabled = true;
@@ -153,6 +153,17 @@ export function playSound(name: SoundName): void {
       tone(audio, 659.25, now + 0.1, 0.12);
       tone(audio, 783.99, now + 0.2, 0.12);
       tone(audio, 1046.5, now + 0.3, 0.35);
+      break;
+    case 'spawn': // απαλό «ντιν» — κάτι εμφανίστηκε στον χάρτη
+      tone(audio, 659.25, now, 0.09, 'sine', 0.05);
+      tone(audio, 987.77, now + 0.08, 0.16, 'sine', 0.05);
+      break;
+    case 'magic': // μαγικό αρπέζ για το χρυσό γεγονός
+      tone(audio, 523.25, now, 0.1, 'triangle', 0.07);
+      tone(audio, 659.25, now + 0.07, 0.1, 'triangle', 0.07);
+      tone(audio, 783.99, now + 0.14, 0.1, 'triangle', 0.07);
+      tone(audio, 1046.5, now + 0.21, 0.22, 'triangle', 0.08);
+      tone(audio, 1318.5, now + 0.3, 0.3, 'sine', 0.05);
       break;
   }
 }

@@ -12,6 +12,31 @@ export interface MapEvent {
   lat: number;
   iso2: string;
   textGreek: string;
+  /** Χρυσό/σπάνιο γεγονός — διπλή ανταμοιβή */
+  golden?: boolean;
+}
+
+/** Πιθανές τοποθεσίες του σπάνιου μονόκερου — αλλάζει κάθε φορά */
+export const UNICORN_SPOTS: { lon: number; lat: number; iso2: string }[] = [
+  { lon: 8, lat: 46.8, iso2: 'ch' },
+  { lon: 8, lat: 61, iso2: 'no' },
+  { lon: 170, lat: -44, iso2: 'nz' },
+  { lon: -72, lat: -13, iso2: 'pe' },
+  { lon: 47, lat: -19, iso2: 'mg' },
+  { lon: 84, lat: 28, iso2: 'np' },
+];
+
+export function makeUnicornEvent(): MapEvent {
+  const spot = UNICORN_SPOTS[Math.floor(Math.random() * UNICORN_SPOTS.length)];
+  return {
+    id: 'unicorn',
+    emoji: '🦄',
+    lon: spot.lon,
+    lat: spot.lat,
+    iso2: spot.iso2,
+    golden: true,
+    textGreek: 'Ένας μαγικός μονόκερος εμφανίστηκε! Απάντησε σωστά για ΔΙΠΛΟ δώρο!',
+  };
 }
 
 export const MAP_EVENTS: MapEvent[] = [

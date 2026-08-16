@@ -53,6 +53,11 @@ interface WorldMapProps {
   ariaLabel?: string;
   /** SVG στοιχεία που ζωγραφίζονται ΜΕΣΑ στην ομάδα ζουμ (π.χ. γεγονότα) */
   overlay?: ReactNode;
+  /**
+   * Πλήρωση όλου του γονικού ύψους: ο χάρτης «κόβεται» στα πλάγια αντί
+   * να μικραίνει — για πλήρη οθόνη σε κινητό (κατακόρυφη οθόνη)
+   */
+  fill?: boolean;
 }
 
 interface TooltipState {
@@ -75,6 +80,7 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
     interactionDisabled = false,
     ariaLabel = 'Παγκόσμιος χάρτης',
     overlay,
+    fill = false,
   },
   ref,
 ) {
@@ -197,11 +203,12 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
   }
 
   return (
-    <div className="worldmap" ref={wrapRef}>
+    <div className={`worldmap ${fill ? 'worldmap--fill' : ''}`} ref={wrapRef}>
       <svg
         ref={svgRef}
         className="worldmap__svg"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
         role="group"
         aria-label={ariaLabel}
       >

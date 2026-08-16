@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ALL_COUNTRIES, getCountryByIsoCode } from '../data/countries';
-import { CONTINENT_LABELS } from '../types/country';
+import { CONTINENT_LABELS, type Country } from '../types/country';
 import type { Question } from '../types/game';
-import { buildQuestion } from '../game/questionGenerator';
-import { MAP_EVENTS, type MapEvent } from '../data/mapEvents';
-import { addToCollection } from '../utils/collection';
+import { buildQuestion, shuffle } from '../game/questionGenerator';
+import { MAP_EVENTS, makeUnicornEvent, type MapEvent } from '../data/mapEvents';
+import { addToCollection, loadCollection } from '../utils/collection';
 import { playSound } from '../audio/soundManager';
 import { WorldMap, type WorldMapHandle } from '../components/WorldMap/WorldMap';
 import { AmbientClouds, MapEventsLayer } from '../components/MapEvents/MapEventsLayer';
@@ -19,6 +19,8 @@ const MAX_ACTIVE_EVENTS = 3;
 const EVENT_LIFETIME_MS = 16_000;
 const SPAWN_EVERY_MS = 7_000;
 const FIRST_SPAWN_MS = 2_500;
+/** Πιθανότητα το επόμενο γεγονός να είναι ο χρυσός μονόκερος */
+const UNICORN_CHANCE = 0.12;
 
 interface ActiveChallenge {
   event: MapEvent;
@@ -35,23 +37,37 @@ export function WorldMapPage() {
 
   // ─── Ζωντανά γεγονότα ─────────────────────────────────────────
   const [events, setEvents] = useState<MapEvent[]>([]);
+  const eventsRef = useRef<MapEvent[]>([]);
   const [challenge, setChallenge] = useState<ActiveChallenge | null>(null);
   const [challengeAnswer, setChallengeAnswer] = useState<string | null>(null);
   const [collected, setCollected] = useState(false);
+  const [bonusCountry, setBonusCountry] = useState<Country | null>(null);
+  // ?big=1 ανοίγει τον χάρτη κατευθείαν σε πλήρη οθόνη
+  const [isFullscreen, setIsFullscreen] = useState(searchParams.get('big') === '1');
+
+  useEffect(() => {
+    eventsRef.current = events;
+  }, [events]);
 
   useEffect(() => {
     const spawn = () => {
-      setEvents((prev) => {
-        if (prev.length >= MAX_ACTIVE_EVENTS) return prev;
+      const prev = eventsRef.current;
+      if (prev.length >= MAX_ACTIVE_EVENTS) return;
+      let ev: MapEvent | undefined;
+      if (Math.random() < UNICORN_CHANCE && !prev.some((p) => p.id === 'unicorn')) {
+        ev = makeUnicornEvent();
+      } else {
         const candidates = MAP_EVENTS.filter((e) => !prev.some((p) => p.id === e.id));
-        if (candidates.length === 0) return prev;
-        const ev = candidates[Math.floor(Math.random() * candidates.length)];
-        window.setTimeout(
-          () => setEvents((cur) => cur.filter((c) => c.id !== ev.id)),
-          EVENT_LIFETIME_MS,
-        );
-        return [...prev, ev];
-      });
+        if (candidates.length === 0) return;
+        ev = candidates[Math.floor(Math.random() * candidates.length)];
+      }
+      const spawned = ev;
+      playSound(spawned.golden ? 'magic' : 'spawn');
+      window.setTimeout(
+        () => setEvents((cur) => cur.filter((c) => c.id !== spawned.id)),
+        EVENT_LIFETIME_MS,
+      );
+      setEvents((cur) => (cur.some((c) => c.id === spawned.id) ? cur : [...cur, spawned]));
     };
     const first = window.setTimeout(spawn, FIRST_SPAWN_MS);
     const iv = window.setInterval(spawn, SPAWN_EVERY_MS);
@@ -70,14 +86,39 @@ export function WorldMapPage() {
     setChallenge({ event: ev, question: buildQuestion(type, country, 'easy', ALL_COUNTRIES) });
     setChallengeAnswer(null);
     setCollected(false);
+    setBonusCountry(null);
   }, []);
+
+  // Έξοδος από πλήρη οθόνη με Escape
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsFullscreen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isFullscreen]);
 
   const handleChallengeAnswer = useCallback(
     (answerId: string) => {
       if (!challenge || challengeAnswer !== null) return;
       const correct = answerId === challenge.question.correctAnswerId;
       playSound(correct ? 'correct' : 'wrong');
-      if (correct) setCollected(addToCollection(challenge.event.iso2));
+      if (correct) {
+        setCollected(addToCollection(challenge.event.iso2));
+        // Χρυσό γεγονός: μπόνους δεύτερη φιγούρα από τις κλειδωμένες
+        if (challenge.event.golden) {
+          const owned = loadCollection();
+          const locked = shuffle(
+            ALL_COUNTRIES.filter((c) => !owned.has(c.iso2) && c.iso2 !== challenge.event.iso2),
+          );
+          if (locked.length > 0) {
+            addToCollection(locked[0].iso2);
+            setBonusCountry(locked[0]);
+            playSound('magic');
+          }
+        }
+      }
       setChallengeAnswer(answerId);
     },
     [challenge, challengeAnswer],
@@ -87,6 +128,7 @@ export function WorldMapPage() {
     setChallenge(null);
     setChallengeAnswer(null);
     setCollected(false);
+    setBonusCountry(null);
   }, []);
 
   useEffect(() => {
@@ -107,9 +149,10 @@ export function WorldMapPage() {
       </p>
 
       <div className="mappage__layout">
-        <div className="mappage__map">
+        <div className={`mappage__map ${isFullscreen ? 'mappage__map--full' : ''}`}>
           <WorldMap
             ref={mapRef}
+            fill={isFullscreen}
             selectedIso2={selectedIso2}
             onSelectCountry={(iso2) => {
               setSelectedIso2(iso2);
@@ -122,6 +165,24 @@ export function WorldMapPage() {
               </>
             }
           />
+          <button
+            type="button"
+            className="mappage__fullbtn"
+            aria-label={isFullscreen ? 'Έξοδος από πλήρη οθόνη' : 'Χάρτης σε πλήρη οθόνη'}
+            title={isFullscreen ? 'Έξοδος' : 'Πλήρης οθόνη'}
+            onClick={() => setIsFullscreen((v) => !v)}
+          >
+            {isFullscreen ? '✕' : '⛶'}
+          </button>
+          {isFullscreen && selected && (
+            <div className="mappage__fullcard" role="status">
+              <Flag iso2={selected.iso2} countryName={selected.nameGreek} size="sm" />
+              <span className="mappage__fullcard-name">{selected.nameGreek}</span>
+              <Link to={`/country/${selected.iso2}`} className="mappage__fullcard-link">
+                Περισσότερα →
+              </Link>
+            </div>
+          )}
         </div>
 
         <aside className="mappage__panel" aria-label="Πληροφορίες επιλεγμένης χώρας">
@@ -197,6 +258,12 @@ export function WorldMapPage() {
                       {collected && country && (
                         <p className="quiz__collect">
                           🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου: {country.nameGreek}!
+                        </p>
+                      )}
+                      {bonusCountry && (
+                        <p className="quiz__collect mapevent-modal__bonus">
+                          🦄 ΔΙΠΛΟ δώρο! Κέρδισες και τη φιγούρα:{' '}
+                          <strong>{bonusCountry.nameGreek}</strong>!
                         </p>
                       )}
                     </>

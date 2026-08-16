@@ -15,6 +15,17 @@
   cursor: grab;
 }
 
+/* Πλήρης οθόνη: ο χάρτης γεμίζει το ύψος και κόβεται στα πλάγια */
+.worldmap--fill {
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.worldmap--fill .worldmap__svg {
+  height: 100%;
+}
+
 .worldmap__svg:active {
   cursor: grabbing;
 }

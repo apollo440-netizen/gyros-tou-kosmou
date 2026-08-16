@@ -77,6 +77,36 @@
   }
 }
 
+/* Χρυσό γεγονός: λαμπερό δαχτυλίδι + σπίθες */
+.mapevent--golden .mapevent__pulse {
+  fill: rgba(255, 215, 90, 0.45);
+  stroke: #ffcf1f;
+  stroke-width: 3;
+  animation-duration: 1s;
+}
+
+.mapevent__sparkle {
+  animation: mapevent-sparkle 1.3s ease-in-out infinite;
+}
+
+.mapevent__sparkle--b {
+  animation-delay: 0.4s;
+}
+
+.mapevent__sparkle--c {
+  animation-delay: 0.8s;
+}
+
+@keyframes mapevent-sparkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mapevent__pulse,
   .mapevent__bob,

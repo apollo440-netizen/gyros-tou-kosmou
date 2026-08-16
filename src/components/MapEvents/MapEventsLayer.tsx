@@ -46,7 +46,7 @@ export function MapEventsLayer({ events, onTap }: MapEventsLayerProps) {
         return (
           <g
             key={ev.id}
-            className="mapevent"
+            className={`mapevent ${ev.golden ? 'mapevent--golden' : ''}`}
             transform={`translate(${p[0]} ${p[1]})`}
             role="button"
             tabIndex={-1}
@@ -60,6 +60,13 @@ export function MapEventsLayer({ events, onTap }: MapEventsLayerProps) {
                 στην εξωτερική θα υπερίσχυαν του translate τοποθέτησης */}
             <g className="mapevent__inner">
               <circle className="mapevent__pulse" r="18" />
+              {ev.golden && (
+                <g className="mapevent__sparkles" aria-hidden="true">
+                  <text x="-22" y="-14" fontSize="12" className="mapevent__sparkle">✨</text>
+                  <text x="14" y="-18" fontSize="10" className="mapevent__sparkle mapevent__sparkle--b">✨</text>
+                  <text x="18" y="16" fontSize="11" className="mapevent__sparkle mapevent__sparkle--c">✨</text>
+                </g>
+              )}
               <g className="mapevent__bob">
                 <text
                   className="mapevent__emoji"
