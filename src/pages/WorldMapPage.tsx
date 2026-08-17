@@ -5,6 +5,7 @@ import { CONTINENT_LABELS, type Country } from '../types/country';
 import type { Question } from '../types/game';
 import { buildQuestion, shuffle } from '../game/questionGenerator';
 import { MAP_EVENTS, makeUnicornEvent, type MapEvent } from '../data/mapEvents';
+import { continentVars } from '../theme/continents';
 import { addToCollection, loadCollection } from '../utils/collection';
 import { playSound } from '../audio/soundManager';
 import { WorldMap, type WorldMapHandle } from '../components/WorldMap/WorldMap';
@@ -149,7 +150,10 @@ export function WorldMapPage() {
       </p>
 
       <div className="mappage__layout">
-        <div className={`mappage__map ${isFullscreen ? 'mappage__map--full' : ''}`}>
+        <div
+          className={`mappage__map ${isFullscreen ? 'mappage__map--full' : ''}`}
+          style={selected ? continentVars(selected.continent) : undefined}
+        >
           <WorldMap
             ref={mapRef}
             fill={isFullscreen}
@@ -257,7 +261,11 @@ export function WorldMapPage() {
                       )}
                       {collected && country && (
                         <p className="quiz__collect">
-                          🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου: {country.nameGreek}!
+                          🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου:{' '}
+                          <Link to={`/country/${country.iso2}?discovered=1`}>
+                            {country.nameGreek}
+                          </Link>
+                          !
                         </p>
                       )}
                       {bonusCountry && (

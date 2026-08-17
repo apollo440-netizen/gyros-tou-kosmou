@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import type { GameConfig, Question, SessionState } from '../types/game';
 import { QuestionStream } from '../game/questionGenerator';
 import {
@@ -262,7 +262,8 @@ function ScratchSession({ config }: { config: GameConfig }) {
           )}
           {lastCollected && country && (
             <p className="quiz__collect">
-              🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου: {country.nameGreek}!
+              🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου:{' '}
+              <Link to={`/country/${country.iso2}?discovered=1`}>{country.nameGreek}</Link>!
             </p>
           )}
           <Button variant="primary" onClick={nextQuestion}>

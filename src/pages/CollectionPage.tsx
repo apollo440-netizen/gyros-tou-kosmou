@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ALL_COUNTRIES } from '../data/countries';
 import { CONTINENT_LABELS, type ContinentId } from '../types/country';
+import { continentVars } from '../theme/continents';
 import { loadCollection } from '../utils/collection';
 import { CountryBall } from '../components/CountryBall/CountryBall';
 import './CollectionPage.css';
@@ -78,6 +79,7 @@ export function CollectionPage() {
               key={c.iso2}
               to={`/country/${c.iso2}`}
               className="collection__item collection__item--owned"
+              style={continentVars(c.continent)}
             >
               <CountryBall country={c} size={84} />
               <span className="collection__name">{c.nameGreek}</span>

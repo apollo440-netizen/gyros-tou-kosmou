@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import type { DifficultyId, FlagVariant, GameConfig, GameModeId, SessionLength } from '../types/game';
 import { GAME_MODE_LABELS } from '../types/game';
 import { useGameSession } from '../hooks/useGameSession';
@@ -187,7 +187,11 @@ function QuizSession({ config }: { config: GameConfig }) {
           )}
           {session.lastCollected && correctCountry && (
             <p className="quiz__collect" aria-live="polite">
-              🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου: {correctCountry.nameGreek}!
+              🎁 Νέα φιγούρα στη <strong>Συλλογή</strong> σου:{' '}
+              <Link to={`/country/${correctCountry.iso2}?discovered=1`}>
+                {correctCountry.nameGreek}
+              </Link>
+              !
             </p>
           )}
           <Button variant="primary" onClick={handleAdvance}>

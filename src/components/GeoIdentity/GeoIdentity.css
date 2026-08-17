@@ -1,0 +1,102 @@
+/* ─── Σιλουέτα χώρας ────────────────────────────────────────────── */
+.silhouette {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.silhouette__path {
+  fill: var(--cont-soft, var(--ocean-100));
+  stroke: var(--cont-accent, var(--ocean-500));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: silhouette-draw 900ms ease-out both;
+  transition: fill 400ms ease, stroke 400ms ease;
+}
+
+@keyframes silhouette-draw {
+  0% {
+    stroke-dashoffset: 1;
+    fill-opacity: 0;
+  }
+  60% {
+    fill-opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+  }
+}
+
+/* ─── Μίνι υδρόγειος ────────────────────────────────────────────── */
+.miniglobe {
+  display: block;
+}
+
+.miniglobe__sphere {
+  fill: #cfe6f7;
+}
+
+.miniglobe__graticule {
+  fill: none;
+  stroke: rgba(34, 116, 165, 0.18);
+  stroke-width: 0.6;
+}
+
+.miniglobe__land {
+  fill: #a8c5a8;
+  stroke: #ffffff;
+  stroke-width: 0.4;
+}
+
+.miniglobe__target {
+  fill: var(--cont-accent, var(--ocean-500));
+  stroke: #ffffff;
+  stroke-width: 0.6;
+  transition: fill 400ms ease;
+}
+
+.miniglobe__dot {
+  fill: var(--cont-dark, var(--ocean-700));
+  stroke: #ffffff;
+  stroke-width: 1.4;
+}
+
+.miniglobe__ping {
+  fill: none;
+  stroke: var(--cont-accent, var(--ocean-500));
+  stroke-width: 2;
+  transform-origin: 70px 70px;
+  animation: miniglobe-ping 2.4s ease-out infinite;
+}
+
+.miniglobe__rim {
+  fill: none;
+  stroke: rgba(13, 47, 79, 0.35);
+  stroke-width: 1.5;
+}
+
+@keyframes miniglobe-ping {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .silhouette__path {
+    animation: none;
+  }
+  .miniglobe__ping {
+    animation: none;
+    opacity: 0;
+  }
+}

@@ -1,6 +1,7 @@
 import type { Question } from '../../types/game';
 import { getCountryByIsoCode } from '../../data/countries';
 import { LANDMARK_BY_ID } from '../../data/landmarks';
+import { continentVars } from '../../theme/continents';
 import { Flag } from '../Flag/Flag';
 import { LandmarkArt } from '../LandmarkArt/LandmarkArt';
 import './QuestionCard.css';
@@ -48,6 +49,9 @@ export function QuestionCard({
           <LandmarkArt
             landmarkId={landmark.id}
             ariaLabel={answered ? landmark.nameGreek : 'Μυστηριώδες μνημείο'}
+            celebrate={answered && selectedAnswerId === question.correctAnswerId}
+            frameAccent={answered}
+            style={answered && country ? continentVars(country.continent) : undefined}
           />
         )}
         {landmark && answered && country && (

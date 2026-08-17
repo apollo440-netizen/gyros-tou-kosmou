@@ -1,8 +1,128 @@
-.landmark-art {
+/* ═══ Διόραμα μνημείου: πλαίσιο-παράθυρο + στρώσεις βάθους ════════ */
+
+.diorama {
   width: min(420px, 100%);
-  height: auto;
-  display: block;
-  border-radius: var(--radius-md);
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 7px;
+  border-radius: 18px;
+  border: 3px solid #ffffff;
+  outline: 2px dashed rgba(13, 47, 79, 0.15);
+  outline-offset: -8px;
   box-shadow: var(--shadow-md);
-  background: transparent;
+  transition: outline-color 400ms ease;
+  touch-action: pan-y;
+}
+
+/* Μετά την αποκάλυψη, το πλαίσιο παίρνει τον τόνο της ηπείρου */
+.diorama--accent {
+  outline-color: var(--cont-accent, var(--ocean-500));
+}
+
+.diorama__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* ── Parallax: το προσκήνιο ακολουθεί περισσότερο, το φόντο σχεδόν
+   καθόλου. Οι τιμές --dx/--dy ∈ [-1, 1] μπαίνουν από pointer events
+   και ομαλοποιούνται μέσω transition (όχι απότομο snap). ── */
+.dio-layer {
+  transition: transform 480ms cubic-bezier(0.22, 0.8, 0.3, 1);
+  will-change: transform;
+}
+
+.dio-layer--back {
+  transform: translate(calc(var(--dx, 0) * -0.5px), calc(var(--dy, 0) * -0.3px));
+}
+
+.dio-layer--mid {
+  transform: translate(calc(var(--dx, 0) * 1.1px), calc(var(--dy, 0) * 0.7px));
+}
+
+.dio-layer--front {
+  transform: translate(calc(var(--dx, 0) * 2.6px), calc(var(--dy, 0) * 1.5px));
+}
+
+/* ── Αυτόνομη «ανάσα» όταν κανείς δεν αλληλεπιδρά: πολύ αργή,
+   αντιστρέφεται φυσικά (alternate). Ζει σε εσωτερικές ομάδες ώστε
+   να μη συγκρούεται με το pointer-transform των στρώσεων. ── */
+.dio-drift--back {
+  animation: dio-drift 16s ease-in-out infinite alternate;
+  --drift: 0.5px;
+}
+
+.dio-drift--mid {
+  animation: dio-drift 12s ease-in-out infinite alternate-reverse;
+  --drift: 0.9px;
+}
+
+.dio-drift--front {
+  animation: dio-drift 9s ease-in-out infinite alternate;
+  --drift: 2px;
+}
+
+@keyframes dio-drift {
+  from {
+    transform: translateX(calc(-1 * var(--drift, 1px)));
+  }
+  to {
+    transform: translateX(var(--drift, 1px));
+  }
+}
+
+/* ── Αναλαμπή εορτασμού (~0.9s) μετά από σωστή απάντηση ── */
+.dio-light {
+  opacity: 0;
+}
+
+.diorama--celebrate .dio-light {
+  animation: dio-light-sweep 850ms ease-out 1 both;
+}
+
+.diorama--celebrate .dio-layer--front {
+  animation: dio-front-hop 700ms cubic-bezier(0.34, 1.5, 0.64, 1) 1;
+}
+
+@keyframes dio-light-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(340px);
+  }
+}
+
+@keyframes dio-front-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+}
+
+/* ── Μειωμένη κίνηση: πλήρης πολυεπίπεδη σκηνή, καμία κίνηση ── */
+@media (prefers-reduced-motion: reduce) {
+  .dio-layer {
+    transition: none;
+    transform: none !important;
+  }
+  .dio-drift--back,
+  .dio-drift--mid,
+  .dio-drift--front {
+    animation: none;
+  }
+  .diorama--celebrate .dio-light,
+  .diorama--celebrate .dio-layer--front {
+    animation: none;
+  }
 }

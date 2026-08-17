@@ -1,8 +1,418 @@
-.country-page {
-  max-width: 820px;
+/* ═══ Σελίδα χώρας ως συλλεκτική σελίδα άτλαντα ═══════════════════
+   Χτισμένη mobile-first· σε φαρδιές οθόνες ανοίγει σε δίστηλη
+   σύνθεση «ανοιχτού άτλαντα». Οι ηπειρωτικοί τόνοι έρχονται από τις
+   μεταβλητές --cont-* (src/theme/continents.ts). */
+
+.atlas {
+  max-width: 960px;
   margin: 0 auto;
 }
 
+.atlas__back {
+  margin-bottom: var(--space-2);
+}
+
+/* «Χάρτινη» σελίδα άτλαντα με σχεδόν αόρατο πλέγμα χάρτη */
+.atlas__page {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(to right, rgba(13, 47, 79, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(13, 47, 79, 0.045) 1px, transparent 1px);
+  background-size: 34px 34px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--cont-soft, var(--ocean-100));
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  overflow: hidden;
+}
+
+/* ── Κεφαλίδα ── */
+.atlas__head {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.atlas__continent {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--cont-accent, var(--ocean-500));
+  border-radius: var(--radius-pill);
+  padding: 0.3em 1.1em;
+  transition: background 400ms ease;
+}
+
+.atlas__name {
+  font-size: clamp(2rem, 6vw, 2.9rem);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: var(--space-2);
+  line-height: 1.15;
+  overflow-wrap: break-word;
+}
+
+.atlas__name::after {
+  content: '';
+  display: block;
+  width: 96px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--cont-accent, var(--ocean-500));
+  margin: 10px auto 0;
+  transition: background 400ms ease;
+}
+
+.atlas__english {
+  color: var(--text-400);
+  margin-top: var(--space-1);
+}
+
+/* ── Σώμα: 1 στήλη σε κινητό, «ανοιχτός άτλαντας» σε desktop ── */
+.atlas__body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 920px) {
+  .atlas__body {
+    grid-template-columns: minmax(340px, 5fr) 6fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+}
+
+/* ── Σκηνή-ήρωας: σιλουέτα + μπάλα + σημαία + υδρόγειος ── */
+.atlas__scene {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  aspect-ratio: 10 / 9;
+}
+
+.atlas__halo {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 78%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--cont-glow, rgba(34, 116, 165, 0.25)) 0%, transparent 68%);
+  transition: background 400ms ease;
+}
+
+.atlas__silhouette {
+  position: absolute;
+  inset: 10% 8% 20% 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+}
+
+.atlas__ball {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+}
+
+/* Σημαία-αυτοκόλλητο, ελαφρώς γερμένη */
+.atlas__flag-sticker {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  transform: rotate(-5deg);
+  padding: 5px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  animation: sticker-settle 500ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.atlas__flag-sticker .flag {
+  width: clamp(76px, 22vw, 108px);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.atlas__globe {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.atlas__globe .miniglobe {
+  width: clamp(84px, 24vw, 112px);
+  height: auto;
+  filter: drop-shadow(0 3px 6px rgba(13, 47, 79, 0.25));
+}
+
+.atlas__globe-caption {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  color: var(--cont-dark, var(--ocean-700));
+  background: var(--surface);
+  border-radius: var(--radius-pill);
+  padding: 0.1em 0.8em;
+  box-shadow: var(--shadow-sm);
+  transition: color 400ms ease;
+}
+
+/* ── Σφραγίδα συλλογής ── */
+.atlas__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
+.atlas__stamp {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 3px double var(--cont-accent, var(--ocean-500));
+  outline: 2px dashed var(--cont-soft, var(--ocean-100));
+  outline-offset: -10px;
+  color: var(--cont-dark, var(--ocean-700));
+  transform: rotate(-7deg);
+  background: color-mix(in srgb, var(--cont-tint, #fff) 55%, transparent);
+  transition: border-color 400ms ease, color 400ms ease;
+}
+
+.atlas__stamp-top {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.atlas__stamp-check {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.atlas__stamp-sub {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.atlas__stamp--locked {
+  border-color: var(--text-400);
+  outline-color: var(--ocean-100);
+  color: var(--text-400);
+  background: transparent;
+  opacity: 0.85;
+}
+
+.atlas__stamp--slam {
+  animation: stamp-slam 500ms cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+@keyframes stamp-slam {
+  0% {
+    transform: rotate(-14deg) scale(2.2);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(-6deg) scale(0.94);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-7deg) scale(1);
+  }
+}
+
+.atlas__progress {
+  font-size: var(--fs-sm);
+  color: var(--text-600);
+}
+
+.atlas__progress strong {
+  color: var(--cont-dark, var(--ocean-700));
+}
+
+.atlas__progress-bar {
+  display: block;
+  width: 200px;
+  height: 8px;
+  margin: 6px auto 0;
+  background: var(--ocean-100);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.atlas__progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--cont-accent, var(--ocean-500));
+  transition: width var(--transition-med), background 400ms ease;
+}
+
+.atlas__unlock-hint {
+  font-size: var(--fs-sm);
+  color: var(--text-600);
+  max-width: 34ch;
+}
+
+/* ── Αυτοκόλλητα στοιχείων ── */
+.atlas__section {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cont-dark, var(--ocean-700));
+  margin: var(--space-4) 0 var(--space-3);
+  transition: color 400ms ease;
+}
+
+.atlas__section:first-child {
+  margin-top: 0;
+}
+
+.atlas__stickers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 3px solid #fff;
+  outline: 2px dashed var(--cont-soft, var(--ocean-100));
+  outline-offset: -6px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3) var(--space-2);
+  animation: sticker-settle 450ms ease-out both;
+}
+
+.sticker:nth-child(odd) {
+  transform: rotate(-0.9deg);
+}
+
+.sticker:nth-child(even) {
+  transform: rotate(0.9deg);
+}
+
+@keyframes sticker-settle {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.sticker__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--cont-tint, var(--ocean-50));
+  color: var(--cont-dark, var(--ocean-700));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 400ms ease, color 400ms ease;
+}
+
+.sticker__glyph {
+  width: 26px;
+  height: 26px;
+}
+
+.sticker__label {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-400);
+}
+
+.sticker__value {
+  font-weight: 800;
+  color: var(--text-900);
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* ── Σημειώσεις εξερευνητή ── */
+.atlas__notes {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.note {
+  position: relative;
+  background:
+    repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      rgba(13, 47, 79, 0.07) 28px
+    ),
+    var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3) var(--space-4);
+  line-height: 28px;
+  color: var(--text-600);
+}
+
+.note:nth-child(odd) {
+  transform: rotate(-0.5deg);
+}
+
+.note:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.note__tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 74px;
+  height: 16px;
+  transform: translateX(-50%) rotate(-2deg);
+  background: color-mix(in srgb, var(--cont-soft, var(--ocean-100)) 75%, transparent);
+  border-left: 1px dashed rgba(13, 47, 79, 0.2);
+  border-right: 1px dashed rgba(13, 47, 79, 0.2);
+  transition: background 400ms ease;
+}
+
+.atlas__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+}
+
+/* ── Σελίδα «δεν βρέθηκε» ── */
 .country-page__missing {
   max-width: 480px;
   margin: var(--space-7) auto;
@@ -12,107 +422,11 @@
   gap: var(--space-3);
 }
 
-.country-page__back {
-  margin-bottom: var(--space-2);
-}
-
-.country-page__hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-5) var(--space-4);
-}
-
-.country-page__name {
-  font-size: clamp(2rem, 5vw, 3rem);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  text-align: center;
-}
-
-.country-page__english {
-  color: var(--text-400);
-  margin-top: calc(-1 * var(--space-2));
-}
-
-.country-page__ball {
-  position: absolute;
-  right: 2%;
-  bottom: -10px;
-  opacity: 0.92;
-  pointer-events: none;
-}
-
-@media (max-width: 900px) {
-  .country-page__ball {
-    position: static;
-    margin-top: var(--space-2);
+/* ── Μειωμένη κίνηση: πλήρης σύνθεση, χωρίς κινήσεις ── */
+@media (prefers-reduced-motion: reduce) {
+  .atlas__flag-sticker,
+  .sticker,
+  .atlas__stamp--slam {
+    animation: none;
   }
-}
-
-.country-page__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-}
-
-@media (max-width: 768px) {
-  .country-page__stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .country-page__stats {
-    grid-template-columns: 1fr;
-  }
-}
-
-.country-stat {
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-3) var(--space-4);
-  text-align: center;
-}
-
-.country-stat__label {
-  display: block;
-  font-size: var(--fs-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-400);
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.country-stat__value {
-  font-weight: 800;
-  color: var(--ocean-900);
-}
-
-.country-page__facts {
-  margin-bottom: var(--space-5);
-}
-
-.country-page__facts h2 {
-  margin-bottom: var(--space-3);
-}
-
-.country-page__facts ul {
-  padding-left: 1.4em;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  color: var(--text-600);
-}
-
-.country-page__actions {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-3);
-  flex-wrap: wrap;
 }

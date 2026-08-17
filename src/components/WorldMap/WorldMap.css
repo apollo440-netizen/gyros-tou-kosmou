@@ -54,12 +54,15 @@
   fill: #d5dde3;
 }
 
+/* Η επιλεγμένη χώρα φωτίζεται με τον τόνο της ηπείρου της (αν έχει
+   οριστεί από τη σελίδα), αλλιώς με το βασικό μπλε του παιχνιδιού */
 .worldmap__country--selected {
-  fill: var(--ocean-500);
+  fill: var(--cont-accent, var(--ocean-500));
+  filter: drop-shadow(0 0 6px var(--cont-glow, rgba(34, 116, 165, 0.4)));
 }
 
 .worldmap__country--selected:hover {
-  fill: var(--ocean-500);
+  fill: var(--cont-accent, var(--ocean-500));
 }
 
 .worldmap__country--correct {
