@@ -46,6 +46,16 @@
   cursor: pointer;
 }
 
+/* Ατμόσφαιρα ηπείρου: παστέλ γεμίσματα ανά ήπειρο (τιμές από το
+   theme/continents.ts μέσω --mapfill-*). Χαμηλός κορεσμός ώστε
+   hover/επιλογή/σωστό/λάθος να παραμένουν κυρίαρχα. */
+.worldmap__country--cont-europe { fill: var(--mapfill-europe, #8fce9f); }
+.worldmap__country--cont-africa { fill: var(--mapfill-africa, #8fce9f); }
+.worldmap__country--cont-asia { fill: var(--mapfill-asia, #8fce9f); }
+.worldmap__country--cont-north-america { fill: var(--mapfill-north-america, #8fce9f); }
+.worldmap__country--cont-south-america { fill: var(--mapfill-south-america, #8fce9f); }
+.worldmap__country--cont-oceania { fill: var(--mapfill-oceania, #8fce9f); }
+
 .worldmap__country--known:hover {
   fill: var(--sun-500);
 }

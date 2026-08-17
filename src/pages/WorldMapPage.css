@@ -18,6 +18,19 @@
   gap: var(--space-3);
   text-align: center;
   animation: pop-in var(--transition-med) both;
+  border-top: 5px solid var(--cont-accent, var(--ocean-500));
+  transition: border-color 400ms ease;
+}
+
+/* Υπογράμμιση τίτλου που παίρνει τον τόνο της επιλεγμένης ηπείρου */
+.mappage__title-rule {
+  display: block;
+  width: 88px;
+  height: 4px;
+  border-radius: 2px;
+  margin: 8px auto 0;
+  background: var(--cont-accent, var(--ocean-500));
+  transition: background 400ms ease;
 }
 
 .mappage__panel-name {

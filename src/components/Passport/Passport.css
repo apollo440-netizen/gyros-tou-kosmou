@@ -139,11 +139,12 @@
   box-shadow: 0 0 0 1px rgba(13, 47, 79, 0.12);
 }
 
+/* Ο κωδικός χώρας «μελανιάζει» με τον τόνο της ηπείρου της */
 .pstamp__iso {
   font-size: 0.5rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--text-600);
+  color: var(--cont-dark, var(--text-600));
   line-height: 1;
 }
 

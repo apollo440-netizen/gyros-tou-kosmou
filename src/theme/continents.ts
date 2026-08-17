@@ -21,6 +21,9 @@ export interface ContinentTheme {
   tint: string;
   /** Λάμψη/φωτοστέφανο (με διαφάνεια) */
   glow: string;
+  /** Παστέλ γέμισμα χωρών στον παγκόσμιο χάρτη — χαμηλός κορεσμός,
+      διακριτό από τον ωκεανό, ώστε ο χάρτης να μένει ευανάγνωστος */
+  mapFill: string;
 }
 
 export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
@@ -30,6 +33,7 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
     soft: '#b9cdf2',
     tint: '#edf2fc',
     glow: 'rgba(43, 95, 199, 0.28)',
+    mapFill: '#a3bce8',
   },
   africa: {
     accent: '#d98e1f',
@@ -37,6 +41,7 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
     soft: '#f2d9ae',
     tint: '#fdf5e6',
     glow: 'rgba(217, 142, 31, 0.30)',
+    mapFill: '#ecc98f',
   },
   asia: {
     accent: '#c8404a',
@@ -44,6 +49,7 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
     soft: '#f2c1c4',
     tint: '#fdeeee',
     glow: 'rgba(200, 64, 74, 0.28)',
+    mapFill: '#eaa8a8',
   },
   'north-america': {
     accent: '#189aa8',
@@ -51,6 +57,7 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
     soft: '#b5e3e8',
     tint: '#eaf8fa',
     glow: 'rgba(24, 154, 168, 0.28)',
+    mapFill: '#96d4cd',
   },
   'south-america': {
     accent: '#2a9d54',
@@ -58,6 +65,7 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
     soft: '#bce5ca',
     tint: '#ecf9f0',
     glow: 'rgba(42, 157, 84, 0.28)',
+    mapFill: '#a2d4a8',
   },
   oceania: {
     accent: '#7c5cbf',
@@ -65,6 +73,7 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
     soft: '#d5c8ef',
     tint: '#f4f0fc',
     glow: 'rgba(124, 92, 191, 0.28)',
+    mapFill: '#c7b0e6',
   },
 };
 
@@ -72,6 +81,15 @@ export const CONTINENT_THEMES: Record<ContinentId, ContinentTheme> = {
  * CSS μεταβλητές μιας ηπείρου, έτοιμες για spread σε style={}.
  * Τα στοιχεία διαβάζουν var(--cont-accent) κ.λπ. με εύλογα fallbacks.
  */
+/** CSS μεταβλητές με τα γεμίσματα χάρτη ΟΛΩΝ των ηπείρων (για το WorldMap) */
+export function continentMapFillVars(): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [id, t] of Object.entries(CONTINENT_THEMES)) {
+    out[`--mapfill-${id}`] = t.mapFill;
+  }
+  return out;
+}
+
 export function continentVars(continent: ContinentId): Record<string, string> {
   const t = CONTINENT_THEMES[continent];
   return {

@@ -14,6 +14,8 @@ import { zoom, zoomIdentity, type ZoomBehavior } from 'd3-zoom';
 // Απαραίτητο: προσθέτει το .transition() στα selections του d3
 import 'd3-transition';
 import { useWorldTopology, type CountryFeature } from './useWorldTopology';
+import { getCountryByIsoCode } from '../../data/countries';
+import { continentMapFillVars } from '../../theme/continents';
 import './WorldMap.css';
 
 const VIEW_W = 1000;
@@ -203,7 +205,11 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
   }
 
   return (
-    <div className={`worldmap ${fill ? 'worldmap--fill' : ''}`} ref={wrapRef}>
+    <div
+      className={`worldmap ${fill ? 'worldmap--fill' : ''}`}
+      ref={wrapRef}
+      style={continentMapFillVars()}
+    >
       <svg
         ref={svgRef}
         className="worldmap__svg"
@@ -221,9 +227,13 @@ export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function World
             const isSelected = known && c.iso2 === selectedIso2;
             const isCorrect = known && c.iso2 === correctIso2;
             const isWrong = known && c.iso2 === wrongIso2;
+            // Παστέλ ατμόσφαιρα ηπείρου — το χρώμα ορίζεται κεντρικά
+            // στο theme/continents.ts και φτάνει εδώ ως CSS μεταβλητή
+            const continent = known ? getCountryByIsoCode(c.iso2!)?.continent : undefined;
             const cls = [
               'worldmap__country',
               known ? 'worldmap__country--known' : 'worldmap__country--unknown',
+              continent ? `worldmap__country--cont-${continent}` : '',
               isSelected ? 'worldmap__country--selected' : '',
               isCorrect ? 'worldmap__country--correct' : '',
               isWrong ? 'worldmap__country--wrong' : '',

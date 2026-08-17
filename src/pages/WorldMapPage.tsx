@@ -142,18 +142,18 @@ export function WorldMapPage() {
   }, [focusIso2]);
 
   return (
-    <div className="mappage">
-      <h1 className="page-title">🗺️ Παγκόσμιος Χάρτης</h1>
+    <div className="mappage" style={selected ? continentVars(selected.continent) : undefined}>
+      <h1 className="page-title">
+        🗺️ Παγκόσμιος Χάρτης
+        <span className="mappage__title-rule" aria-hidden="true" />
+      </h1>
       <p className="page-subtitle">
         Πάτησε μια χώρα για πληροφορίες — και έχε τον νου σου: κάθε λίγο
         εμφανίζονται εκπλήξεις πάνω στον χάρτη! 🎈
       </p>
 
       <div className="mappage__layout">
-        <div
-          className={`mappage__map ${isFullscreen ? 'mappage__map--full' : ''}`}
-          style={selected ? continentVars(selected.continent) : undefined}
-        >
+        <div className={`mappage__map ${isFullscreen ? 'mappage__map--full' : ''}`}>
           <WorldMap
             ref={mapRef}
             fill={isFullscreen}

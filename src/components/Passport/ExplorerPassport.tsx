@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { AnswerRecord } from '../../types/game';
 import { getCountryByIsoCode } from '../../data/countries';
+import { continentVars } from '../../theme/continents';
 import { playSound } from '../../audio/soundManager';
 import { Flag } from '../Flag/Flag';
 import './Passport.css';
@@ -59,7 +60,9 @@ export function PassportStamp({ stop, index, large = false }: PassportStampProps
   return (
     <span
       className={`pstamp pstamp--${state} ${large ? 'pstamp--large' : ''}`}
-      style={{ '--tilt': `${tilt}deg` } as React.CSSProperties}
+      style={
+        { '--tilt': `${tilt}deg`, ...continentVars(country.continent) } as React.CSSProperties
+      }
       role="img"
       aria-label={label}
       title={label}
