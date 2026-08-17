@@ -14,9 +14,30 @@
   flex-wrap: wrap;
 }
 
+/* Ίδια ετικέτα βαλίτσας με τα υπόλοιπα παιχνίδια */
 .scratch__mode {
+  position: relative;
   font-weight: 800;
+  font-size: var(--fs-sm);
   color: var(--text-600);
+  background: #fdfbf5;
+  border: 1.5px solid #d9cfae;
+  border-radius: 8px;
+  padding: 0.35em 0.9em 0.35em 1.5em;
+  box-shadow: var(--shadow-sm);
+  transform: rotate(-1.2deg);
+}
+
+.scratch__mode::before {
+  content: '';
+  position: absolute;
+  left: 0.55em;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px #b9a15e;
 }
 
 .scratch__card {

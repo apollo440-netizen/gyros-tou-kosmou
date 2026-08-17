@@ -3,7 +3,7 @@
  * κανένα autoplay: ο ήχος παράγεται μόνο ως απόκριση σε ενέργεια του χρήστη.
  */
 
-export type SoundName = 'correct' | 'wrong' | 'click' | 'highscore' | 'spawn' | 'magic';
+export type SoundName = 'correct' | 'wrong' | 'click' | 'highscore' | 'spawn' | 'magic' | 'stamp';
 
 let ctx: AudioContext | null = null;
 let enabled = true;
@@ -154,6 +154,21 @@ export function playSound(name: SoundName): void {
       tone(audio, 783.99, now + 0.2, 0.12);
       tone(audio, 1046.5, now + 0.3, 0.35);
       break;
+    case 'stamp': { // μαλακό «γκουπ» σφραγίδας στο διαβατήριο
+      tone(audio, 150, now, 0.07, 'sine', 0.09);
+      tone(audio, 95, now + 0.02, 0.09, 'triangle', 0.06);
+      const src = audio.createBufferSource();
+      src.buffer = getNoiseBuffer(audio);
+      const filter = audio.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 700;
+      const gain = audio.createGain();
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+      src.connect(filter).connect(gain).connect(audio.destination);
+      src.start(now, Math.random() * 0.3, 0.08);
+      break;
+    }
     case 'spawn': // απαλό «ντιν» — κάτι εμφανίστηκε στον χάρτη
       tone(audio, 659.25, now, 0.09, 'sine', 0.05);
       tone(audio, 987.77, now + 0.08, 0.16, 'sine', 0.05);

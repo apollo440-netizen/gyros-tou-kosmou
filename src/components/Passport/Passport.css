@@ -1,0 +1,332 @@
+/* ═══ Διαβατήριο του Εξερευνητή ═══════════════════════════════════
+   Χάρτινη λωρίδα με σφραγίδες-χώρες, δεμένες με διακεκομμένη
+   διαδρομή ταξιδιού. Ουδέτερη «ατλαντική» βάση ώστε οι σημαίες να
+   κυριαρχούν χρωματικά. */
+
+.passport {
+  position: relative;
+  background:
+    radial-gradient(rgba(13, 47, 79, 0.05) 1px, transparent 1.4px),
+    linear-gradient(180deg, #fdfbf5 0%, #f6f1e4 100%);
+  background-size: 14px 14px, auto;
+  border: 1px solid #e3dbc6;
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    var(--shadow-sm);
+  padding: 8px 10px;
+}
+
+.passport__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-600);
+  padding: 0 2px 6px;
+}
+
+.passport__meta strong {
+  color: var(--ocean-700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Σειρά σφραγίδων + διαδρομή ── */
+.passport__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+  min-height: 44px;
+}
+
+.passport__row + .passport__row {
+  margin-top: 6px;
+}
+
+/* Η «χάραξη» όλου του ταξιδιού — αχνή διακεκομμένη */
+.passport__route {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 50%;
+  border-top: 2px dashed rgba(13, 47, 79, 0.18);
+}
+
+/* Το κομμάτι που έχει ήδη ταξιδευτεί */
+.passport__route-done {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  border-top: 2px dashed var(--sun-600);
+  transition: width 450ms ease;
+}
+
+.passport__plane {
+  position: absolute;
+  right: -7px;
+  top: -8px;
+  width: 15px;
+  height: 15px;
+  color: var(--ocean-700);
+  transform: rotate(-8deg);
+}
+
+/* ── Άδεια θέση διαβατηρίου ── */
+.pslot {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 34px;
+  aspect-ratio: 5 / 6;
+  border: 1.6px dashed rgba(13, 47, 79, 0.22);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pslot__compass {
+  width: 16px;
+  height: 16px;
+  color: var(--ocean-500);
+  animation: compass-wobble 3.2s ease-in-out infinite;
+}
+
+@keyframes compass-wobble {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+/* ── Σφραγίδα ── */
+.pstamp {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 34px;
+  aspect-ratio: 5 / 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: #fff;
+  border: 1.6px solid rgba(13, 47, 79, 0.45);
+  border-radius: 7px;
+  box-shadow: 0 1px 2px rgba(13, 47, 79, 0.18);
+  transform: rotate(var(--tilt, 0deg));
+  animation: pstamp-land 450ms cubic-bezier(0.2, 1.4, 0.35, 1) both;
+}
+
+.pstamp__flag {
+  display: block;
+  line-height: 0;
+}
+
+.pstamp__flag .flag {
+  width: 22px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(13, 47, 79, 0.12);
+}
+
+.pstamp__iso {
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-600);
+  line-height: 1;
+}
+
+/* Νέα ανακάλυψη: χρυσό περίγραμμα + αστέρι + λάμψη (όχι μόνο χρώμα) */
+.pstamp--new {
+  border-color: var(--sun-600);
+  box-shadow:
+    0 0 0 2px rgba(255, 183, 3, 0.4),
+    0 1px 3px rgba(13, 47, 79, 0.2);
+}
+
+.pstamp--new::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 10px;
+  pointer-events: none;
+  box-shadow: 0 0 12px 3px rgba(255, 183, 3, 0.65);
+  opacity: 0;
+  animation: pstamp-glow 900ms ease-out 350ms both;
+}
+
+.pstamp__star {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 12px;
+  height: 12px;
+}
+
+/* Λάθος: αχνή σφραγίδα-περίγραμμα — επίσκεψη χωρίς κατάκτηση */
+.pstamp--miss {
+  background: rgba(255, 255, 255, 0.6);
+  border-style: dashed;
+  border-color: rgba(13, 47, 79, 0.3);
+  box-shadow: none;
+}
+
+.pstamp--miss .flag {
+  filter: grayscale(0.7);
+  opacity: 0.6;
+}
+
+.pstamp--miss .pstamp__iso {
+  color: var(--text-400);
+}
+
+.pstamp__miss-mark {
+  position: absolute;
+  bottom: -2px;
+  right: 1px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--text-400);
+  line-height: 1;
+}
+
+/* ── Κινήσεις σφραγίσματος ── */
+@keyframes pstamp-land {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--tilt, 0deg)) scale(1.9) translateY(-6px);
+  }
+  55% {
+    opacity: 1;
+    transform: rotate(var(--tilt, 0deg)) scale(0.88);
+  }
+  75% {
+    transform: rotate(var(--tilt, 0deg)) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--tilt, 0deg)) scale(1);
+  }
+}
+
+@keyframes pstamp-glow {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Μόνιμο διακριτικό χρυσό δαχτυλίδι μετά τη λάμψη */
+.pstamp--new {
+  outline: none;
+}
+
+/* ── Πυκνή εκδοχή (χάρτης σε κινητό) ── */
+.passport--compact {
+  padding: 5px 8px;
+}
+
+.passport--compact .passport__row {
+  min-height: 34px;
+}
+
+.passport--compact .pstamp,
+.passport--compact .pslot {
+  max-width: 26px;
+  border-radius: 5px;
+}
+
+.passport--compact .pstamp__flag .flag {
+  width: 17px;
+}
+
+.passport--compact .pstamp__iso {
+  display: none;
+}
+
+/* ── Μεγάλη εκδοχή (αποτελέσματα) ── */
+.passport--large {
+  padding: 14px 14px 10px;
+}
+
+.passport--large .passport__row {
+  min-height: 74px;
+  gap: 6px;
+}
+
+.passport--large .pstamp,
+.passport--large .pslot {
+  max-width: 60px;
+  border-radius: 10px;
+}
+
+.passport--large .pstamp__flag .flag {
+  width: 34px;
+  border-radius: 4px;
+}
+
+.passport--large .pstamp__iso {
+  font-size: 0.62rem;
+}
+
+.passport--large .pstamp__name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 3px;
+  font-size: 0.56rem;
+  font-weight: 700;
+  color: var(--text-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100% + 6px);
+  text-align: center;
+}
+
+.passport--large .passport__row {
+  margin-bottom: 16px;
+}
+
+/* ── Μειωμένη κίνηση ── */
+@media (prefers-reduced-motion: reduce) {
+  .pstamp {
+    animation: pstamp-fade 200ms ease both;
+  }
+  .pstamp--new::after {
+    animation: none;
+    opacity: 0.5;
+  }
+  .pslot__compass {
+    animation: none;
+  }
+  .passport__route-done {
+    transition: none;
+  }
+}
+
+@keyframes pstamp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

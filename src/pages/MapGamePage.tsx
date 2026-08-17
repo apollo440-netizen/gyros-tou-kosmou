@@ -7,6 +7,7 @@ import { playSound } from '../audio/soundManager';
 import { getCountryByIsoCode } from '../data/countries';
 import { WorldMap, type WorldMapHandle } from '../components/WorldMap/WorldMap';
 import { useWorldTopology } from '../components/WorldMap/useWorldTopology';
+import { ExplorerPassport } from '../components/Passport/ExplorerPassport';
 import { ScoreDisplay } from '../components/ScoreDisplay/ScoreDisplay';
 import { GameResults } from '../components/GameResults/GameResults';
 import { Button } from '../components/Button/Button';
@@ -122,6 +123,8 @@ function MapGameSession({
         questionNumber={state.questionIndex + 1}
         totalQuestions={session.totalQuestions}
       />
+
+      <ExplorerPassport stops={state.answers} totalQuestions={session.totalQuestions} compact />
 
       <h2 className="mapgame__prompt">{question.prompt}</h2>
 

@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { SessionState } from '../../types/game';
 import { formatScore } from '../../game/scoring';
 import { addScore, loadScores, sanitizePlayerName, MAX_PLAYER_NAME_LENGTH } from '../../utils/storage';
+import { loadCollection } from '../../utils/collection';
+import { getCountryByIsoCode } from '../../data/countries';
 import { useSettings } from '../../context/SettingsContext';
 import { playSound } from '../../audio/soundManager';
 import { Button } from '../Button/Button';
+import { CountryBall } from '../CountryBall/CountryBall';
+import { ExplorerPassport } from '../Passport/ExplorerPassport';
+import { SessionRouteMap } from '../Passport/SessionRouteMap';
 import './GameResults.css';
+
+/** Ορόσημα συλλογής που γιορτάζονται με χρυσή σφραγίδα */
+const MILESTONES = [10, 25, 50, 100, 197];
 
 interface GameResultsProps {
   state: SessionState;
@@ -26,6 +34,21 @@ export function GameResults({ state, onPlayAgain }: GameResultsProps) {
   const isNewHighScore =
     state.score > 0 &&
     (loadScores()[0]?.score === undefined || state.score > loadScores()[0].score);
+
+  // ─── Το ταξίδι της συνεδρίας ───
+  // Σε πολύ μεγάλα ατέρμονα ταξίδια δείχνουμε τις τελευταίες 20 σφραγίδες
+  const journeyStops = state.answers.slice(-20);
+  const hiddenStops = state.answers.length - journeyStops.length;
+  const uniqueVisited = new Set(state.answers.map((a) => a.countryId)).size;
+  const discoveredIso2 = [
+    ...new Set(state.answers.filter((a) => a.discovered).map((a) => a.countryId)),
+  ];
+  const discoveredCountries = discoveredIso2
+    .map((iso2) => getCountryByIsoCode(iso2))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c));
+  const collectionAfter = loadCollection().size;
+  const collectionBefore = collectionAfter - discoveredCountries.length;
+  const milestone = MILESTONES.find((m) => collectionBefore < m && collectionAfter >= m);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -56,7 +79,51 @@ export function GameResults({ state, onPlayAgain }: GameResultsProps) {
 
   return (
     <section className="game-results card" aria-label="Αποτελέσματα παιχνιδιού">
-      <h2 className="game-results__title">Τελικό Σκορ</h2>
+      <h2 className="game-results__title">Το Ταξίδι σου</h2>
+      <p className="game-results__journey-sub">
+        Επισκέφθηκες <strong>{uniqueVisited}</strong>{' '}
+        {uniqueVisited === 1 ? 'χώρα' : 'χώρες'} σε {total}{' '}
+        {total === 1 ? 'στάση' : 'στάσεις'}
+        {hiddenStops > 0 && <> (οι {hiddenStops} πρώτες δεν χωρούν στη σελίδα)</>}
+      </p>
+
+      <div className="game-results__passport">
+        <ExplorerPassport
+          stops={journeyStops}
+          totalQuestions={journeyStops.length}
+          large
+          silent
+        />
+      </div>
+
+      <SessionRouteMap stops={state.answers} />
+
+      {discoveredCountries.length > 0 && (
+        <div className="game-results__discoveries" role="status">
+          <h3 className="game-results__discoveries-title">Νέες Ανακαλύψεις</h3>
+          <div className="game-results__discoveries-grid">
+            {discoveredCountries.map((c, i) => (
+              <Link
+                key={c.iso2}
+                to={`/country/${c.iso2}?discovered=1`}
+                className="game-results__discovery"
+                style={{ animationDelay: `${i * 140}ms` }}
+              >
+                <CountryBall country={c} size={76} />
+                <span className="game-results__discovery-name">{c.nameGreek}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {milestone && (
+        <p className="game-results__milestone" role="status">
+          🏅 Ορόσημο εξερευνητή: <strong>{milestone}</strong>{' '}
+          {milestone === 197 ? '— ΟΛΟΚΛΗΡΟΣ ο άτλαντας!' : 'χώρες στον άτλαντά σου!'}
+        </p>
+      )}
+
       {isNewHighScore && (
         <p className="game-results__highscore" role="status">
           🎉 Νέο ρεκόρ!

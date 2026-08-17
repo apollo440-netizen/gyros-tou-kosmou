@@ -16,7 +16,7 @@ export function ScoreDisplay({ score, streak, questionNumber, totalQuestions }: 
         <span className="score-display__value">{formatScore(score)}</span>
       </div>
       <div className="score-display__item">
-        <span className="score-display__label">Ερώτηση</span>
+        <span className="score-display__label">Στάση</span>
         <span className="score-display__value">
           {questionNumber}
           {totalQuestions !== null && <span className="score-display__total"> / {totalQuestions}</span>}

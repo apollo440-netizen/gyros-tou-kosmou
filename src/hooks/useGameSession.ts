@@ -73,9 +73,10 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
         ? scoreCorrectAnswer(state.streak, timeMs)
         : scoreWrongAnswer();
       if (correct && hintUsed) breakdown = applyHintPenalty(breakdown);
+      const discovered = correct && addToCollection(question.countryId);
       setSelectedAnswerId(answerId);
       setLastBreakdown(breakdown);
-      setLastCollected(correct && addToCollection(question.countryId) ? question.countryId : null);
+      setLastCollected(discovered ? question.countryId : null);
       setState((prev) => {
         const streak = correct ? prev.streak + 1 : 0;
         return {
@@ -91,6 +92,7 @@ export function useGameSession(config: GameConfig, restrictToIso2?: Set<string>)
               correct,
               pointsAwarded: breakdown.total,
               timeMs,
+              discovered,
             },
           ],
         };

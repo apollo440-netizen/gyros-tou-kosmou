@@ -1,0 +1,52 @@
+.routemap {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.routemap__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.routemap__ocean {
+  fill: #d8ecf8;
+}
+
+.routemap__land {
+  fill: #cfdfc9;
+  stroke: #ffffff;
+  stroke-width: 0.6;
+}
+
+.routemap__route {
+  fill: none;
+  stroke: var(--ocean-700);
+  stroke-width: 3.5;
+  stroke-dasharray: 10 9;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.routemap__dot {
+  stroke: #ffffff;
+  stroke-width: 2.5;
+}
+
+.routemap__dot--ok {
+  fill: var(--leaf-500);
+}
+
+.routemap__dot--new {
+  fill: var(--sun-500);
+}
+
+.routemap__dot--miss {
+  fill: #b8c4cc;
+}
+
+.routemap__plane {
+  color: var(--ocean-900);
+}

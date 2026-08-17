@@ -77,6 +77,8 @@ export interface AnswerRecord {
   /** Πόντοι που κερδήθηκαν σε αυτή την ερώτηση */
   pointsAwarded: number;
   timeMs: number;
+  /** Η απάντηση ξεκλείδωσε τη φιγούρα της χώρας για ΠΡΩΤΗ φορά */
+  discovered?: boolean;
 }
 
 export interface SessionState {

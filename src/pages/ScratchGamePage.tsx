@@ -10,6 +10,7 @@ import { parseGameConfig } from './QuizGamePage';
 import { playSound } from '../audio/soundManager';
 import { addToCollection } from '../utils/collection';
 import { getCountryByIsoCode } from '../data/countries';
+import { ExplorerPassport } from '../components/Passport/ExplorerPassport';
 import { ScoreDisplay } from '../components/ScoreDisplay/ScoreDisplay';
 import { GameResults } from '../components/GameResults/GameResults';
 import { Button } from '../components/Button/Button';
@@ -106,9 +107,10 @@ function ScratchSession({ config }: { config: GameConfig }) {
         ? Math.min(state.streak, MAX_STREAK_BONUS_STEPS) * STREAK_BONUS_PER_STEP
         : 0;
       const total = base + streakBonus;
+      const discovered = correct && addToCollection(question.countryId);
       setSelectedId(choiceId);
       setLastPoints(total);
-      setLastCollected(correct && addToCollection(question.countryId) ? question.countryId : null);
+      setLastCollected(discovered ? question.countryId : null);
       playSound(correct ? 'correct' : 'wrong');
       setState((prev) => {
         const streak = correct ? prev.streak + 1 : 0;
@@ -125,6 +127,7 @@ function ScratchSession({ config }: { config: GameConfig }) {
               correct,
               pointsAwarded: total,
               timeMs: 0,
+              discovered,
             },
           ],
         };
@@ -188,6 +191,8 @@ function ScratchSession({ config }: { config: GameConfig }) {
         questionNumber={state.questionIndex + 1}
         totalQuestions={totalQuestions}
       />
+
+      <ExplorerPassport stops={state.answers} totalQuestions={totalQuestions} />
 
       <section className="scratch__card card" aria-label="Κρυμμένη σημαία">
         <h2 className="scratch__prompt">

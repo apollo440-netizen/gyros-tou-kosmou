@@ -6,6 +6,7 @@ import { useGameSession } from '../hooks/useGameSession';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
 import { playSound } from '../audio/soundManager';
 import { QuestionCard } from '../components/QuestionCard/QuestionCard';
+import { ExplorerPassport } from '../components/Passport/ExplorerPassport';
 import { ScoreDisplay } from '../components/ScoreDisplay/ScoreDisplay';
 import { GameResults } from '../components/GameResults/GameResults';
 import { Button } from '../components/Button/Button';
@@ -143,6 +144,8 @@ function QuizSession({ config }: { config: GameConfig }) {
         questionNumber={state.questionIndex + 1}
         totalQuestions={session.totalQuestions}
       />
+
+      <ExplorerPassport stops={state.answers} totalQuestions={session.totalQuestions} />
 
       <QuestionCard
         key={question.id}

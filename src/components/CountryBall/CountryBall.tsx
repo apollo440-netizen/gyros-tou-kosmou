@@ -182,7 +182,18 @@ export function CountryBall({
           )}
           {/* Σφαιρική σκίαση */}
           <circle cx="50" cy="52" r="46" fill={`url(#${shadeId})`} />
+          {/* Γυαλάδα-παιχνιδιού πάνω αριστερά */}
+          <ellipse
+            cx="35"
+            cy="25"
+            rx="13"
+            ry="6.5"
+            fill="rgba(255,255,255,0.4)"
+            transform="rotate(-20 35 25)"
+          />
           <circle cx="50" cy="52" r="46" fill="none" stroke="rgba(8,33,56,0.55)" strokeWidth="2.5" />
+          {/* Λευκό περίγραμμα αυτοκόλλητου — «συλλεκτικό» φινίρισμα */}
+          <circle cx="50" cy="52" r="48.4" fill="none" stroke="#ffffff" strokeWidth="2.8" opacity="0.9" />
 
           {/* Μαγουλάκια */}
           {ch.blush && (
